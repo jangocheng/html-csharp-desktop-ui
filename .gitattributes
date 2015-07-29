@@ -1,0 +1,20 @@
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+*.cs text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
+
+*.txt text eol=crlf
+
+*.xsd text eol=crlf
+
+*.ico -text !eol
+*.png -text !eol
+
+*.svg text eol=crlf
+
+*.html text eol=crlf
+*.js text eol=crlf
+
+packages/**/*.* -text !eol
