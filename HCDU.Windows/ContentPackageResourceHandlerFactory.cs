@@ -44,9 +44,7 @@ namespace HCDU.Windows
                 return null;
             }
 
-
             HttpResponse response = contentProvider.GetContent();
-
             MemoryStream mem = new MemoryStream(response.Content);
             return ResourceHandler.FromStream(mem, response.MimeType);
         }

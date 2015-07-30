@@ -13,17 +13,7 @@ namespace HCDU.API
         {
             this.assembly = assembly;
             this.resourceName = resourceName;
-            this.mimeType = GetMimeType(resourceName);
-        }
-
-        private static string GetMimeType(string resourceName)
-        {
-            resourceName = resourceName.ToLower();
-            if (resourceName.EndsWith(".css"))
-            {
-                return "text/css";
-            }
-            return "text/html";
+            this.mimeType = MimeTypes.GetMimeType(resourceName);
         }
 
         public bool IsStatic

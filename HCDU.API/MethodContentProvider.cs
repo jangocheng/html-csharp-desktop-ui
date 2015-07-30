@@ -25,14 +25,13 @@ namespace HCDU.API
             {
                 TResult result = method();
 
-                //todo: handle null, handle errors
+                //todo: handle null
                 DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(TResult));
                 MemoryStream mem = new MemoryStream();
                 ser.WriteObject(mem, result);
 
                 HttpResponse response = new HttpResponse();
-                //todo: move to const
-                response.MimeType = "application/json";
+                response.MimeType = MimeTypes.Json;
                 response.Content = mem.ToArray();
 
                 return response;
@@ -45,12 +44,11 @@ namespace HCDU.API
 
         private HttpResponse CreateErrorResponse(Exception ex)
         {
-            HttpResponse response = new HttpResponse();
-            //todo: set status code and status text for internal server error
-            //todo: move to const
-            response.MimeType = "text/plain";
-
             string content = string.Format("{0}: {1}\n---------------------\n{2}", ex.GetType().FullName, ex.Message, ex.StackTrace);
+
+            //todo: set status code and status text for internal server error
+            HttpResponse response = new HttpResponse();
+            response.MimeType = MimeTypes.PlainText;
             response.Content = Encoding.UTF8.GetBytes(content);
             
             return response;

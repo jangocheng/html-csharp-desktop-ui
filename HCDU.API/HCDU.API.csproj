@@ -46,6 +46,7 @@
     <Compile Include="IContentProvider.cs" />
     <Compile Include="IWebBrowserAdapter.cs" />
     <Compile Include="MethodContentProvider.cs" />
+    <Compile Include="MimeTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceContentProvider.cs" />
   </ItemGroup>
