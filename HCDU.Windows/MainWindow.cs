@@ -1,6 +1,8 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using CefSharp.WinForms;
+using HCDU.API;
+using HCDU.Content;
 
 namespace HCDU.Windows
 {
@@ -11,10 +13,14 @@ namespace HCDU.Windows
         public MainWindow()
         {
             InitializeComponent();
-            InitBrowser();
+
+            ContentPackage contentPackage = new ContentPackage();
+            HcduContent.AppendTo(contentPackage);
+
+            InitBrowser(contentPackage);
         }
 
-        private void InitBrowser()
+        private void InitBrowser(ContentPackage contentPackage)
         {
             webBrowser = new ChromiumWebBrowser("about:blank");
             webBrowser.Name = "webBrowser";
@@ -24,6 +30,9 @@ namespace HCDU.Windows
             webBrowser.TabIndex = 1;
 
             webBrowserPanel.Controls.Add(webBrowser);
+
+            webBrowser.ResourceHandlerFactory = new ContentPackageResourceHandlerFactory("http://localhost", contentPackage);
+            webBrowser.Load("http://localhost");
         }
 
         private void MenuActionGoToGoogle(object sender, System.EventArgs e)
@@ -34,6 +43,11 @@ namespace HCDU.Windows
         private void MenuActionOpenDevTools(object sender, System.EventArgs e)
         {
             webBrowser.ShowDevTools();
+        }
+
+        private void MenuActionRefresh(object sender, System.EventArgs e)
+        {
+            webBrowser.Reload(true);
         }
     }
 }
