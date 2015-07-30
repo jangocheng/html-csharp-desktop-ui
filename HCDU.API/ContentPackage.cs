@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -7,6 +8,11 @@ namespace HCDU.API
     public class ContentPackage
     {
         private readonly Dictionary<string, IContentProvider> contentProviders = new Dictionary<string, IContentProvider>();
+
+        public void AddMethod<TResult>(string contentLocation, Func<TResult> method)
+        {
+            AddContentProvider(contentLocation, new MethodContentProvider<TResult>(method));
+        }
 
         public void AddContent(Assembly assembly, string resourcePrefix)
         {
