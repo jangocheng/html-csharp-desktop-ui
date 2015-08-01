@@ -52,7 +52,30 @@
     <EmbeddedResource Include="Web\css\main.css" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Web\fonts\roboto\README.md" />
     <EmbeddedResource Include="Web\index.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\script\libs\angular-animate.min.js" />
+    <EmbeddedResource Include="Web\script\libs\angular-aria.min.js" />
+    <EmbeddedResource Include="Web\script\libs\angular-material.min.js" />
+    <EmbeddedResource Include="Web\script\libs\angular.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\css\libs\angular-material.min.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\script\app.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\fonts\roboto\roboto-v15-300.woff" />
+    <EmbeddedResource Include="Web\fonts\roboto\roboto-v15-500.woff" />
+    <EmbeddedResource Include="Web\fonts\roboto\roboto-v15-700.woff" />
+    <EmbeddedResource Include="Web\fonts\roboto\roboto-v15-italic.woff" />
+    <EmbeddedResource Include="Web\fonts\roboto\roboto-v15-regular.woff" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\fonts\roboto\roboto.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

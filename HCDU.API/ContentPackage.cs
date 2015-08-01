@@ -44,8 +44,15 @@ namespace HCDU.API
             {
                 return resourceName;
             }
-            string path = string.Join("/", locationParts.Take(locationParts.Length - 2));
-            string filename = locationParts[locationParts.Length - 2] + "." + locationParts[locationParts.Length - 1];
+
+            int fileNameLength = 2;
+            if (locationParts.Length >= 3 && locationParts[locationParts.Length - 2] == "min")
+            {
+                fileNameLength = 3;
+            }
+
+            string path = string.Join("/", locationParts.Take(locationParts.Length - fileNameLength));
+            string filename = string.Join(".", locationParts.Skip(locationParts.Length - fileNameLength));
             return path + "/" + filename;
         }
 

@@ -1,28 +1,59 @@
 ﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <link rel="stylesheet" type="text/css" href="css/main.css">
+<html lang="en" ng-app="HcduApp">
+<meta charset="UTF-8">
+<title>Hello World!</title>
+<link rel="stylesheet" href="css/libs/angular-material.min.css">
+<link rel="stylesheet" href="fonts/roboto/roboto.css">
+<link rel="stylesheet" type="text/css" href="css/main.css">
+<meta name="viewport" content="initial-scale=1"/>
 </head>
+<body layout="column" ng-controller="AppCtrl">
+<md-toolbar layout="row">
+    <div class="md-toolbar-tools">
+        <md-button ng-click="toggleSidenav('left')" hide-gt-sm class="md-icon-button">
+            <md-icon aria-label="Menu" md-svg-icon="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68133/menu.svg"></md-icon>
+        </md-button>
+        <h1>
+        	Hello World
+        </h1>
+    </div>
+</md-toolbar>
+<div layout="row" flex>
+    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')">
 
-<body>
-
-<div>
-    Hello World!
+    </md-sidenav>
+    <div layout="column" flex id="content">
+        <md-content layout="column" flex class="md-padding">
+        	<h1>Charsets</h1>
+        	<div>
+        		<h1>Yukikaze / 戦闘妖精雪風 / Вьюга</h1>
+        		<h2>Yukikaze / 戦闘妖精雪風 / Вьюга</h2>
+        		Yukikaze / 戦闘妖精雪風 / Вьюга
+        	</div>
+            <div>
+                <ul>
+                    <li>
+                        <a href="rest/cars/boxter">Test Json</a>
+                    </li>
+                    <li>
+                        <a href="rest/exception">Test Exception</a>
+                    </li>
+                </ul>
+            </div>
+        </md-content>
+    </div>
 </div>
 
-<div>
-    <ul>
-        <li>
-            <a href="rest/cars/boxter">Test Json</a>
-        </li>
-        <li>
-            <a href="rest/exception">Test Exception</a>
-        </li>
-    </ul>
-</div>
+<!-- Angular Material Dependencies -->
+<script src="script/libs/angular.min.js"></script>
+<script src="script/libs/angular-animate.min.js"></script>
+<script src="script/libs/angular-aria.min.js"></script>
+
+<!-- Angular Material -->
+<script src="script/libs/angular-material.min.js"></script>
+
+<!-- Application -->
+<script src="script/app.js"></script>
 
 </body>
-
 </html>
