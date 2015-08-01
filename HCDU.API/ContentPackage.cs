@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace HCDU.API
 {
     public class ContentPackage
     {
         private readonly Dictionary<string, IContentProvider> contentProviders = new Dictionary<string, IContentProvider>();
+
+        public IEnumerable<string> Resources
+        {
+            get { return contentProviders.Keys.ToList(); }
+        }
 
         public void AddMethod<TResult>(string contentLocation, Func<TResult> method)
         {
@@ -42,7 +49,7 @@ namespace HCDU.API
             return path + "/" + filename;
         }
 
-        private void AddContentProvider(string contentLocation, IContentProvider contentProvider)
+        public void AddContentProvider(string contentLocation, IContentProvider contentProvider)
         {
             if (contentProviders.ContainsKey(contentLocation))
             {

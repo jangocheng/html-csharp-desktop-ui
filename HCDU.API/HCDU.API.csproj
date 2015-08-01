@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentPackage.cs" />
+    <Compile Include="DebugPages.cs" />
     <Compile Include="HcduException.cs" />
     <Compile Include="HttpResponse.cs" />
     <Compile Include="IContentProvider.cs" />
@@ -49,6 +50,9 @@
     <Compile Include="MimeTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceContentProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="page.template.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

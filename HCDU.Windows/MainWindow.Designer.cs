@@ -29,9 +29,13 @@
         private void InitializeComponent()
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.googleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.devToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.actionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.googlePageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.devToolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.refreshToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.resourcesListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.webBrowserPanel = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -39,35 +43,65 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.googleToolStripMenuItem,
-            this.devToolsToolStripMenuItem,
-            this.refreshToolStripMenuItem});
+            this.actionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1132, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // googleToolStripMenuItem
+            // actionsToolStripMenuItem
             // 
-            this.googleToolStripMenuItem.Name = "googleToolStripMenuItem";
-            this.googleToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.googleToolStripMenuItem.Text = "Google";
-            this.googleToolStripMenuItem.Click += new System.EventHandler(this.MenuActionGoToGoogle);
+            this.actionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.homeToolStripMenuItem,
+            this.googlePageToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.devToolsToolStripMenuItem1,
+            this.refreshToolStripMenuItem1,
+            this.resourcesListToolStripMenuItem});
+            this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
+            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.actionsToolStripMenuItem.Text = "Actions";
             // 
-            // devToolsToolStripMenuItem
+            // homeToolStripMenuItem
             // 
-            this.devToolsToolStripMenuItem.Name = "devToolsToolStripMenuItem";
-            this.devToolsToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
-            this.devToolsToolStripMenuItem.Text = "DevTools";
-            this.devToolsToolStripMenuItem.Click += new System.EventHandler(this.MenuActionOpenDevTools);
+            this.homeToolStripMenuItem.Name = "homeToolStripMenuItem";
+            this.homeToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.homeToolStripMenuItem.Text = "Home Page";
+            this.homeToolStripMenuItem.Click += new System.EventHandler(this.MenuActionShowHomePage);
             // 
-            // refreshToolStripMenuItem
+            // googlePageToolStripMenuItem
             // 
-            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.refreshToolStripMenuItem.Text = "Refresh";
-            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.MenuActionRefresh);
+            this.googlePageToolStripMenuItem.Name = "googlePageToolStripMenuItem";
+            this.googlePageToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.googlePageToolStripMenuItem.Text = "Google";
+            this.googlePageToolStripMenuItem.Click += new System.EventHandler(this.MenuActionShowGoogle);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(153, 6);
+            // 
+            // devToolsToolStripMenuItem1
+            // 
+            this.devToolsToolStripMenuItem1.Name = "devToolsToolStripMenuItem1";
+            this.devToolsToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.devToolsToolStripMenuItem1.Text = "Developer tools";
+            this.devToolsToolStripMenuItem1.Click += new System.EventHandler(this.MenuActionOpenDevTools);
+            // 
+            // refreshToolStripMenuItem1
+            // 
+            this.refreshToolStripMenuItem1.Name = "refreshToolStripMenuItem1";
+            this.refreshToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.refreshToolStripMenuItem1.Text = "Reload";
+            this.refreshToolStripMenuItem1.Click += new System.EventHandler(this.MenuActionReload);
+            // 
+            // resourcesListToolStripMenuItem
+            // 
+            this.resourcesListToolStripMenuItem.Name = "resourcesListToolStripMenuItem";
+            this.resourcesListToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.resourcesListToolStripMenuItem.Text = "Resources List";
+            this.resourcesListToolStripMenuItem.Click += new System.EventHandler(this.MenuActionShowResources);
             // 
             // webBrowserPanel
             // 
@@ -99,10 +133,14 @@
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem googleToolStripMenuItem;
         private System.Windows.Forms.Panel webBrowserPanel;
-        private System.Windows.Forms.ToolStripMenuItem devToolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem actionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem homeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resourcesListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem googlePageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem devToolsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem1;
     }
 }
 

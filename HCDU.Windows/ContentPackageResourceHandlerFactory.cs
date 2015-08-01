@@ -33,10 +33,6 @@ namespace HCDU.Windows
             }
 
             string contentLocation = request.Url.Substring(baseUrl.Length).TrimStart('/');
-            if (contentLocation == "")
-            {
-                contentLocation = "index.html";
-            }
 
             IContentProvider contentProvider = contentPackage.GetContentProvider(contentLocation);
             if (contentProvider == null)

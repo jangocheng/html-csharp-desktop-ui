@@ -8,6 +8,9 @@ namespace HCDU.Windows
 {
     public partial class MainWindow : Form
     {
+        private const string BaseUrl = "http://localhost/";
+        private const string HamePageUrl = BaseUrl + "index.html";
+
         private ChromiumWebBrowser webBrowser;
 
         public MainWindow()
@@ -16,6 +19,7 @@ namespace HCDU.Windows
 
             ContentPackage contentPackage = new ContentPackage();
             HcduContent.AppendTo(contentPackage);
+            DebugPages.AppendTo(contentPackage);
 
             InitBrowser(contentPackage);
         }
@@ -31,13 +35,23 @@ namespace HCDU.Windows
 
             webBrowserPanel.Controls.Add(webBrowser);
 
-            webBrowser.ResourceHandlerFactory = new ContentPackageResourceHandlerFactory("http://localhost", contentPackage);
-            webBrowser.Load("http://localhost");
+            webBrowser.ResourceHandlerFactory = new ContentPackageResourceHandlerFactory(BaseUrl, contentPackage);
+            webBrowser.Load(HamePageUrl);
         }
 
-        private void MenuActionGoToGoogle(object sender, System.EventArgs e)
+        private void MenuActionShowHomePage(object sender, System.EventArgs e)
+        {
+            webBrowser.Load(HamePageUrl);
+        }
+
+        private void MenuActionShowGoogle(object sender, System.EventArgs e)
         {
             webBrowser.Load("http://www.google.com");
+        }
+
+        private void MenuActionReload(object sender, System.EventArgs e)
+        {
+            webBrowser.Reload(true);
         }
 
         private void MenuActionOpenDevTools(object sender, System.EventArgs e)
@@ -45,9 +59,9 @@ namespace HCDU.Windows
             webBrowser.ShowDevTools();
         }
 
-        private void MenuActionRefresh(object sender, System.EventArgs e)
+        private void MenuActionShowResources(object sender, System.EventArgs e)
         {
-            webBrowser.Reload(true);
+            webBrowser.Load(BaseUrl + "debug/resources.html");
         }
     }
 }
