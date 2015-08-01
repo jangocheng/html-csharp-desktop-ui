@@ -9,7 +9,7 @@ namespace HCDU.Windows
     public partial class MainWindow : Form
     {
         private const string BaseUrl = "http://localhost/";
-        private const string HamePageUrl = BaseUrl + "index.html";
+        private const string HomePageUrl = BaseUrl + "index.html";
 
         private ChromiumWebBrowser webBrowser;
 
@@ -36,12 +36,12 @@ namespace HCDU.Windows
             webBrowserPanel.Controls.Add(webBrowser);
 
             webBrowser.ResourceHandlerFactory = new ContentPackageResourceHandlerFactory(BaseUrl, contentPackage);
-            webBrowser.Load(HamePageUrl);
+            webBrowser.Load(HomePageUrl);
         }
 
         private void MenuActionShowHomePage(object sender, System.EventArgs e)
         {
-            webBrowser.Load(HamePageUrl);
+            webBrowser.Load(HomePageUrl);
         }
 
         private void MenuActionShowGoogle(object sender, System.EventArgs e)
