@@ -44,9 +44,9 @@ namespace HCDU.Windows
             webBrowser.Load(HomePageUrl);
         }
 
-        private void MenuActionShowGoogle(object sender, System.EventArgs e)
+        private void MenuActionShowAngularMaterial(object sender, System.EventArgs e)
         {
-            webBrowser.Load("http://www.google.com");
+            webBrowser.Load("https://material.angularjs.org");
         }
 
         private void MenuActionReload(object sender, System.EventArgs e)

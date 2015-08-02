@@ -80,6 +80,22 @@
   <ItemGroup>
     <EmbeddedResource Include="Web\images\menu.svg" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\partials\examples\rest\rest.html" />
+    <EmbeddedResource Include="Web\partials\examples\rest\rest.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\partials\examples\text\text.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\partials\examples\text\text.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\partials\examples\about\about.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\partials\examples\about\about.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

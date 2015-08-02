@@ -32,7 +32,6 @@
             this.actionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.googlePageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.devToolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.resourcesListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,51 +54,45 @@
             this.actionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.homeToolStripMenuItem,
             this.googlePageToolStripMenuItem,
-            this.toolStripMenuItem1,
             this.devToolsToolStripMenuItem1,
             this.refreshToolStripMenuItem1,
             this.resourcesListToolStripMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
-            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
-            this.actionsToolStripMenuItem.Text = "Actions";
+            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.actionsToolStripMenuItem.Text = "Tools";
             // 
             // homeToolStripMenuItem
             // 
             this.homeToolStripMenuItem.Name = "homeToolStripMenuItem";
-            this.homeToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.homeToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.homeToolStripMenuItem.Text = "Home Page";
             this.homeToolStripMenuItem.Click += new System.EventHandler(this.MenuActionShowHomePage);
             // 
             // googlePageToolStripMenuItem
             // 
             this.googlePageToolStripMenuItem.Name = "googlePageToolStripMenuItem";
-            this.googlePageToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.googlePageToolStripMenuItem.Text = "Google";
-            this.googlePageToolStripMenuItem.Click += new System.EventHandler(this.MenuActionShowGoogle);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(153, 6);
+            this.googlePageToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.googlePageToolStripMenuItem.Text = "Angular Material Website";
+            this.googlePageToolStripMenuItem.Click += new System.EventHandler(this.MenuActionShowAngularMaterial);
             // 
             // devToolsToolStripMenuItem1
             // 
             this.devToolsToolStripMenuItem1.Name = "devToolsToolStripMenuItem1";
-            this.devToolsToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.devToolsToolStripMenuItem1.Size = new System.Drawing.Size(207, 22);
             this.devToolsToolStripMenuItem1.Text = "Developer tools";
             this.devToolsToolStripMenuItem1.Click += new System.EventHandler(this.MenuActionOpenDevTools);
             // 
             // refreshToolStripMenuItem1
             // 
             this.refreshToolStripMenuItem1.Name = "refreshToolStripMenuItem1";
-            this.refreshToolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.refreshToolStripMenuItem1.Size = new System.Drawing.Size(207, 22);
             this.refreshToolStripMenuItem1.Text = "Reload";
             this.refreshToolStripMenuItem1.Click += new System.EventHandler(this.MenuActionReload);
             // 
             // resourcesListToolStripMenuItem
             // 
             this.resourcesListToolStripMenuItem.Name = "resourcesListToolStripMenuItem";
-            this.resourcesListToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.resourcesListToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.resourcesListToolStripMenuItem.Text = "Resources List";
             this.resourcesListToolStripMenuItem.Click += new System.EventHandler(this.MenuActionShowResources);
             // 
@@ -138,7 +131,6 @@
         private System.Windows.Forms.ToolStripMenuItem homeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resourcesListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem googlePageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem devToolsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem1;
     }
