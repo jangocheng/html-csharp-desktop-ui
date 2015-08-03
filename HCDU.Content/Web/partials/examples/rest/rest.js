@@ -7,20 +7,25 @@
     app.controller('RestExampleCtrl', [
         '$scope', '$http', function($scope, $http) {
 
-            $scope.requestResult = null;
+            $scope.response = null;
 
             $scope.testJson = function() {
-                $http.get('rest/cars/boxter').
-                    success(function(data) {
-                        $scope.requestResult = data;
-                    });
+                $scope.testGet('rest/cars/boxter');
             };
 
             $scope.testException = function() {
-                $http.get('rest/exception').
-                    success(function(data) {
-                        $scope.requestResult = data;
-                    });
+                $scope.testGet('rest/exception');
+            };
+
+            $scope.testGet = function(url) {
+                $http.get(url).then(
+                    function(response) {
+                        $scope.response = response;
+                    },
+                    function(response) {
+                        $scope.response = response;
+                    }
+                );
             };
         }
     ]);

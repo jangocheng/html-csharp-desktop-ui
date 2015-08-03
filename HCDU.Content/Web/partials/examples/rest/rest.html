@@ -3,6 +3,11 @@
         <md-button class="md-raised" ng-click="testJson()">Test Json</md-button>
         <md-button class="md-raised" ng-click="testException()">Test Exception</md-button>
     </div>
-    <md-divider></md-divider>
-    <pre>{{requestResult}}</pre>
+    <md-toolbar class="{{(!!response && response.status >= 300) ? 'md-warn': ''}}">
+        <div class="md-toolbar-tools">
+            <span>Result:&nbsp;</span>
+            <span ng-if="!!response">{{response.status}} {{response.statusText}}</span>
+        </div>
+    </md-toolbar>
+    <pre>{{response.data}}</pre>
 </div>
