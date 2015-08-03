@@ -32,7 +32,7 @@ namespace HCDU.API
                 using (MemoryStream mem = new MemoryStream())
                 {
                     resourceStream.CopyTo(mem);
-                    return new HttpResponse{MimeType = mimeType, Content = mem.ToArray()};
+                    return HttpResponse.Ok(mimeType, mem.ToArray());
                 }
             }
         }

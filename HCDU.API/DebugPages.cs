@@ -48,10 +48,7 @@ namespace HCDU.API
 
             content = content.Replace("%PAGE_BODY%", sb.ToString());
 
-            HttpResponse response = new HttpResponse();
-            response.MimeType = MimeTypes.Html;
-            response.Content = Encoding.UTF8.GetBytes(content);
-            return response;
+            return HttpResponse.Ok(MimeTypes.Html, Encoding.UTF8.GetBytes(content));
         }
 
         private string LoadResourceAsString(string resourceName)

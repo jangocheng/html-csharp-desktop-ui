@@ -30,11 +30,7 @@ namespace HCDU.API
                 MemoryStream mem = new MemoryStream();
                 ser.WriteObject(mem, result);
 
-                HttpResponse response = new HttpResponse();
-                response.MimeType = MimeTypes.Json;
-                response.Content = mem.ToArray();
-
-                return response;
+                return HttpResponse.Ok(MimeTypes.Json, mem.ToArray());
             }
             catch (Exception e)
             {
@@ -45,13 +41,7 @@ namespace HCDU.API
         private HttpResponse CreateErrorResponse(Exception ex)
         {
             string content = string.Format("{0}: {1}\n---------------------\n{2}", ex.GetType().FullName, ex.Message, ex.StackTrace);
-
-            //todo: set status code and status text for internal server error
-            HttpResponse response = new HttpResponse();
-            response.MimeType = MimeTypes.PlainText;
-            response.Content = Encoding.UTF8.GetBytes(content);
-            
-            return response;
+            return HttpResponse.InternalServerError(MimeTypes.PlainText, Encoding.UTF8.GetBytes(content));
         }
     }
 }

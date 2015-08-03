@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using CefSharp;
 using HCDU.API;
 
@@ -8,11 +9,17 @@ namespace HCDU.Windows
     {
         private readonly string baseUrl;
         private readonly ContentPackage contentPackage;
+        private readonly MethodInfo statusCodeSetter;
+        private readonly MethodInfo statusTextSetter;
 
         public ContentPackageResourceHandlerFactory(string baseUrl, ContentPackage contentPackage)
         {
             this.baseUrl = baseUrl;
             this.contentPackage = contentPackage;
+
+            //todo: create patch for CefSharp instead?
+            statusCodeSetter = typeof (ResourceHandler).GetProperty("StatusCode").GetSetMethod(true);
+            statusTextSetter = typeof (ResourceHandler).GetProperty("StatusText").GetSetMethod(true);
         }
 
         public void RegisterHandler(string url, ResourceHandler handler)
@@ -42,12 +49,21 @@ namespace HCDU.Windows
 
             HttpResponse response = contentProvider.GetContent();
             MemoryStream mem = new MemoryStream(response.Content);
-            return ResourceHandler.FromStream(mem, response.MimeType);
+
+            ResourceHandler resourceHandler = ResourceHandler.FromStream(mem, response.MimeType);
+            SetStatus(resourceHandler, response.StatusCode, response.StatusText);
+            return resourceHandler;
         }
 
         public bool HasHandlers
         {
             get { return true; }
+        }
+
+        private void SetStatus(ResourceHandler resourceHandler, int statusCode, string statusText)
+        {
+            statusCodeSetter.Invoke(resourceHandler, new object[] {statusCode});
+            statusTextSetter.Invoke(resourceHandler, new object[] {statusText});
         }
     }
 }
