@@ -12,4 +12,5 @@ See more details on [Browser Components](https://github.com/yu-kopylov/html-csha
 
 * **HCDU.API** - common components which can be reused in other projects.
 * **HCDU.Content** - main content of the application. It will be used in both Windows and Linux versions of application.
-* **HCDU.Windows** - Windows application. It is as thin wrapper around WinForms, [CefSharp](https://github.com/cefsharp/CefSharp) and HCDU.Content.
+* **HCDU.Linux.Gtk** - Linux application. It is a thin wrapper around Gtk#, webkit-sharp and HCDU.Content.
+* **HCDU.Windows** - Windows application. It is a thin wrapper around WinForms, [CefSharp](https://github.com/cefsharp/CefSharp) and HCDU.Content.
