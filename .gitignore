@@ -5,5 +5,7 @@ bin
 *.DotSettings.user
 *.suo
 
+*.userprefs
+
 packages
 !packages/repositories.config
