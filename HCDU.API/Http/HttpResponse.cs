@@ -1,4 +1,4 @@
-﻿namespace HCDU.API
+﻿namespace HCDU.API.Http
 {
     public class HttpResponse
     {
@@ -23,6 +23,11 @@
         public static HttpResponse InternalServerError(string mimeType, byte[] content)
         {
             return new HttpResponse(500, "Internal Server Error", mimeType, content);
+        }
+
+        public static HttpResponse NotFound()
+        {
+            return new HttpResponse(404, "Not Found", null, null);
         }
     }
 }

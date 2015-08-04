@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using HCDU.API.Http;
 
 namespace HCDU.API
 {

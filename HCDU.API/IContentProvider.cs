@@ -1,4 +1,6 @@
-﻿namespace HCDU.API
+﻿using HCDU.API.Http;
+
+namespace HCDU.API
 {
     public interface IContentProvider
     {

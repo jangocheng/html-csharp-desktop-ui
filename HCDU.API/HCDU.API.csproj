@@ -43,13 +43,16 @@
     <Compile Include="ContentPackage.cs" />
     <Compile Include="DebugPages.cs" />
     <Compile Include="HcduException.cs" />
-    <Compile Include="HttpResponse.cs" />
+    <Compile Include="Http\HttpResponse.cs" />
     <Compile Include="IContentProvider.cs" />
     <Compile Include="IWebBrowserAdapter.cs" />
     <Compile Include="MethodContentProvider.cs" />
-    <Compile Include="MimeTypes.cs" />
+    <Compile Include="Http\MimeTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceContentProvider.cs" />
+    <Compile Include="Http\HttpHeader.cs" />
+    <Compile Include="Http\HttpRequest.cs" />
+    <Compile Include="Server\WebServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="page.template.html" />

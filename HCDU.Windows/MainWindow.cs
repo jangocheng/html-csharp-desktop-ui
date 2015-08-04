@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using CefSharp.WinForms;
 using HCDU.API;
@@ -39,27 +40,27 @@ namespace HCDU.Windows
             webBrowser.Load(HomePageUrl);
         }
 
-        private void MenuActionShowHomePage(object sender, System.EventArgs e)
+        private void MenuActionShowHomePage(object sender, EventArgs e)
         {
             webBrowser.Load(HomePageUrl);
         }
 
-        private void MenuActionShowAngularMaterial(object sender, System.EventArgs e)
+        private void MenuActionShowAngularMaterial(object sender, EventArgs e)
         {
             webBrowser.Load("https://material.angularjs.org");
         }
 
-        private void MenuActionReload(object sender, System.EventArgs e)
+        private void MenuActionReload(object sender, EventArgs e)
         {
             webBrowser.Reload(true);
         }
 
-        private void MenuActionOpenDevTools(object sender, System.EventArgs e)
+        private void MenuActionOpenDevTools(object sender, EventArgs e)
         {
             webBrowser.ShowDevTools();
         }
 
-        private void MenuActionShowResources(object sender, System.EventArgs e)
+        private void MenuActionShowResources(object sender, EventArgs e)
         {
             webBrowser.Load(BaseUrl + "debug/resources.html");
         }

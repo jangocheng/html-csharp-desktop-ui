@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace HCDU.API
+namespace HCDU.API.Http
 {
     public static class MimeTypes
     {
