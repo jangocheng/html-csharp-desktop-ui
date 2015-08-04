@@ -45,7 +45,7 @@
             this.actionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1132, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1008, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -103,14 +103,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.webBrowserPanel.Location = new System.Drawing.Point(0, 27);
             this.webBrowserPanel.Name = "webBrowserPanel";
-            this.webBrowserPanel.Size = new System.Drawing.Size(1132, 602);
+            this.webBrowserPanel.Size = new System.Drawing.Size(1008, 575);
             this.webBrowserPanel.TabIndex = 1;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1132, 629);
+            this.ClientSize = new System.Drawing.Size(1008, 602);
             this.Controls.Add(this.webBrowserPanel);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
