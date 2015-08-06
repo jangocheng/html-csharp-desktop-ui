@@ -21,6 +21,7 @@ namespace HCDU.Windows
             ContentPackage contentPackage = new ContentPackage();
             HcduContent.AppendTo(contentPackage);
             DebugPages.AppendTo(contentPackage);
+            Platform.SetAdapter(new WinFormsPlatformAdapter(this));
 
             InitBrowser(contentPackage);
         }

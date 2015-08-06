@@ -10,7 +10,8 @@ app.controller('AppCtrl', [
         $scope.sections = [
             { name: 'about', title: 'About' },
             { name: 'text', title: 'Text Styles' },
-            { name: 'rest', title: 'Rest Calls' }
+            { name: 'rest', title: 'Rest Calls' },
+            { name: 'dialogs', title: 'Dialogs' }
         ];
 
         $scope.selectedSection = $scope.sections[0];

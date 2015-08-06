@@ -1,0 +1,13 @@
+<div ng-controller="DialogsExampleCtrl" layout="column">
+    <div layout="row">
+        <md-button class="md-raised" ng-click="testJson()">Select Folder</md-button>
+        <md-button class="md-raised" ng-click="testException()">Select New Folder</md-button>
+    </div>
+    <md-toolbar class="{{(!!response && response.status >= 300) ? 'md-warn': ''}}">
+        <div class="md-toolbar-tools">
+            <span>Result:&nbsp;</span>
+            <span ng-if="!!response">{{response.status}} {{response.statusText}}</span>
+        </div>
+    </md-toolbar>
+    <pre>{{response.data}}</pre>
+</div>
