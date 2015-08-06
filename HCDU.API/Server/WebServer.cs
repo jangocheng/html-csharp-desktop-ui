@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using HCDU.API.Http;
@@ -23,17 +24,104 @@ namespace HCDU.API.Server
         {
             tcpListener.Start();
 
+            Thread thread = new Thread(ListenerLoop);
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        private void ListenerLoop()
+        {
+            //todo: add stop flag
             while (true)
             {
                 TcpClient client = tcpListener.AcceptTcpClient();
-                using (NetworkStream stream = client.GetStream())
+
+                //todo: use thread pool
+                Thread thread = new Thread(HandleClient);
+                thread.IsBackground = true;
+                thread.Start(client);
+            }
+        }
+
+        //todo: handle exceptions
+        private void HandleClient(object obj)
+        {
+            TcpClient client = (TcpClient) obj;
+
+            using (NetworkStream stream = client.GetStream())
+            {
+                HttpRequest request = ReadRequest(stream);
+                if (IsWebSocketRequest(request))
                 {
-                    HttpRequest request = ReadRequest(stream);
+                    HandleWebSocketRequest(stream, request);
                     HttpResponse response = ProcessRequest(request);
                     WriteResponse(stream, response);
                 }
-                client.Close();
+                else
+                {
+                    HttpResponse response = ProcessRequest(request);
+                    WriteResponse(stream, response);
+                }
             }
+
+            client.Close();
+        }
+
+        //WebSocket handshake is described here: https://tools.ietf.org/html/rfc6455#section-4.2.2
+        private void HandleWebSocketRequest(NetworkStream stream, HttpRequest request)
+        {
+            HttpHeader clientKeyHeader = request.Headers.FirstOrDefault(h => h.Name == HttpHeader.SecWebsocketKey);
+            if (clientKeyHeader == null || string.IsNullOrWhiteSpace(clientKeyHeader.Value))
+            {
+                //todo: send error response instead
+                throw new HcduException(string.Format("{0} header is missing.", HttpHeader.SecWebsocketKey));
+            }
+            string clientKey = clientKeyHeader.Value;
+            string serverKey = CreateWebSocketServerKey(clientKey);
+
+            WriteLine(stream, "HTTP/1.1 101 Switching Protocols");
+            WriteHeader(stream, HttpHeader.Connection, HttpHeader.ConnectionUpgrade);
+            WriteHeader(stream, HttpHeader.SecWebSocketAccept, serverKey);
+            WriteHeader(stream, HttpHeader.Upgrade, HttpHeader.UpgradeWebsocket);
+            WriteLine(stream, "");
+
+            SendWebSocketMessage(stream, "Hello.");
+            Thread.Sleep(10000);
+            SendWebSocketMessage(stream, "Goodbye.");
+
+            //todo: send close message
+        }
+
+        //WebSocket message is desribed here: https://tools.ietf.org/html/rfc6455#section-5.2
+        private void SendWebSocketMessage(NetworkStream stream, string message)
+        {
+            UTF8Encoding encoding = new UTF8Encoding(false);
+            byte[] messageBytes = encoding.GetBytes(message);
+            if (messageBytes.Length > 125)
+            {
+                throw new HcduException("Long messages are not supported yet.");
+            }
+            byte[] frameHeader = new byte[2];
+            frameHeader[0] = 0x81;
+            frameHeader[1] = (byte) messageBytes.Length;
+            stream.Write(frameHeader, 0, frameHeader.Length);
+            stream.Write(messageBytes, 0, messageBytes.Length);
+            //todo: flush ?
+        }
+
+        private string CreateWebSocketServerKey(string clientKey)
+        {
+            string value = clientKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+            SHA1 sha1 = SHA1.Create();
+            byte[] valueSha1 = sha1.ComputeHash(Encoding.ASCII.GetBytes(value));
+            return Convert.ToBase64String(valueSha1);
+        }
+
+        private bool IsWebSocketRequest(HttpRequest request)
+        {
+            return
+                request.Headers.Any(h => h.Name == HttpHeader.Connection && h.Value == HttpHeader.ConnectionUpgrade) &&
+                request.Headers.Any(h => h.Name == HttpHeader.Upgrade && h.Value == HttpHeader.UpgradeWebsocket);
         }
 
         private HttpResponse ProcessRequest(HttpRequest request)
@@ -50,7 +138,7 @@ namespace HCDU.API.Server
             return contentProvider.GetContent();
         }
 
-        //HTTP message is desribed here: http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4
+        //HTTP message is desribed here: https://tools.ietf.org/html/rfc2616#section-4
         private HttpRequest ReadRequest(NetworkStream stream)
         {
             //todo: use BufferedStream ?

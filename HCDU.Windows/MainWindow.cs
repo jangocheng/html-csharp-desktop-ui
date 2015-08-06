@@ -3,15 +3,17 @@ using System.Drawing;
 using System.Windows.Forms;
 using CefSharp.WinForms;
 using HCDU.API;
+using HCDU.API.Server;
 using HCDU.Content;
 
 namespace HCDU.Windows
 {
     public partial class MainWindow : Form
     {
-        private const string BaseUrl = "http://localhost/";
+        private const string BaseUrl = "http://localhost:8899/";
         private const string HomePageUrl = BaseUrl + "index.html";
 
+        private WebServer webServer;
         private ChromiumWebBrowser webBrowser;
 
         public MainWindow()
@@ -23,7 +25,15 @@ namespace HCDU.Windows
             DebugPages.AppendTo(contentPackage);
             Platform.SetAdapter(new WinFormsPlatformAdapter(this));
 
+            StartServer(contentPackage);
+
             InitBrowser(contentPackage);
+        }
+
+        void StartServer(ContentPackage contentPackage)
+        {
+            webServer = new WebServer(contentPackage, 8899);
+            webServer.Start();
         }
 
         private void InitBrowser(ContentPackage contentPackage)

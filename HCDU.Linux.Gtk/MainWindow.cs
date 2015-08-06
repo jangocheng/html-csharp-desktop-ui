@@ -41,8 +41,6 @@ public partial class MainWindow: Gtk.Window
 	void StartServer (ContentPackage contentPackage)
 	{
 		webServer = new WebServer (contentPackage, 8899);
-		Thread thread = new Thread (webServer.Start);
-		thread.IsBackground = true;
 		thread.Start ();
 	}
 
