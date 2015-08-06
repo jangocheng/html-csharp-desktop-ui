@@ -4,6 +4,7 @@ using HCDU.API;
 using HCDU.Content;
 using WebKit;
 using HCDU.API.Server;
+using HCDU.Linux.Gtk;
 using System.Threading;
 
 public partial class MainWindow: Gtk.Window
@@ -24,6 +25,7 @@ public partial class MainWindow: Gtk.Window
 		ContentPackage contentPackage = new ContentPackage();
 		HcduContent.AppendTo(contentPackage);
 		DebugPages.AppendTo(contentPackage);
+		Platform.SetAdapter(new GtkPlatformAdapter(this));
 
 		StartServer (contentPackage);
 
