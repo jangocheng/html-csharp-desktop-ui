@@ -80,9 +80,9 @@ namespace HCDU.API.Server
             string serverKey = CreateWebSocketServerKey(clientKey);
 
             WriteLine(stream, "HTTP/1.1 101 Switching Protocols");
+            WriteHeader(stream, HttpHeader.Upgrade, HttpHeader.UpgradeWebsocket);
             WriteHeader(stream, HttpHeader.Connection, HttpHeader.ConnectionUpgrade);
             WriteHeader(stream, HttpHeader.SecWebSocketAccept, serverKey);
-            WriteHeader(stream, HttpHeader.Upgrade, HttpHeader.UpgradeWebsocket);
             WriteLine(stream, "");
 
             SendWebSocketMessage(stream, "Hello.");
