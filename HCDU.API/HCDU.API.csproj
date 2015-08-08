@@ -55,6 +55,10 @@
     <Compile Include="Http\HttpRequest.cs" />
     <Compile Include="Server\WebServer.cs" />
     <Compile Include="IPlatformAdapter.cs" />
+    <Compile Include="Server\WebSocketFrame.cs" />
+    <Compile Include="Server\WebSocketFrameHeader.cs" />
+    <Compile Include="Server\WebSocketMessage.cs" />
+    <Compile Include="Server\WebSocketOpcodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="page.template.html" />

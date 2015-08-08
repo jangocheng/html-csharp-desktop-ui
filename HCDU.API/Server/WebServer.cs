@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -51,6 +52,7 @@ namespace HCDU.API.Server
 
             using (NetworkStream stream = client.GetStream())
             {
+                //todo: handle IOException
                 HttpRequest request = ReadRequest(stream);
                 if (IsWebSocketRequest(request))
                 {
@@ -78,6 +80,7 @@ namespace HCDU.API.Server
 
             SendWebSocketMessage(stream, "Hello.");
 
+            //todo: remove test code
             Thread thread = new Thread(() =>
                                        {
                                            Thread.Sleep(10000);
@@ -85,117 +88,70 @@ namespace HCDU.API.Server
                                        });
             thread.Start();
 
+            WebSocketFrameHeader messageHeader = null;
+            MemoryStream messageContent = new MemoryStream();
+            ulong messageLength = 0;
+
             //todo: stop gracefully
             while (true)
             {
-                WebSocketMessage message = ReadWebSocketMessage(stream);
+                WebSocketFrame frame = ReadWebSocketFrame(stream);
 
-                if (message.OpCode == WebSocketOpcodes.ConnectionCloseFrame)
+                if (WebSocketOpcodes.IsControlFrame(frame.Header.OpCode))
                 {
-                    //todo: send close message
-                    return;
+                    HandleWebSocketControlFrame(frame);
                 }
-                if (message.OpCode == WebSocketOpcodes.PingFrame)
+
+                if (messageHeader == null)
                 {
-                    //todo: send pong
-                }
-                if (message.OpCode == WebSocketOpcodes.PongFrame)
-                {
-                    //todo: check pong
-                }
-                if (message.OpCode == WebSocketOpcodes.BinaryFrame || message.OpCode == WebSocketOpcodes.TextFrame)
-                {
-                    //todo: process message
-                }
-                //todo: check what RFC recommends is such situation
-                throw new HcduException(string.Format("Unecpected Opcode: {0}.", message.OpCode));
-            }
-        }
-
-        //todo: move to separate file
-        public class WebSocketOpcodes
-        {
-            public const byte ContinuationFrame = 0;
-            public const byte TextFrame = 1;
-            public const byte BinaryFrame = 2;
-            public const byte ConnectionCloseFrame = 8;
-            public const byte PingFrame = 9;
-            public const byte PongFrame = 10;
-
-            public static bool IsControlFrame(byte opcode)
-            {
-                return opcode >= 8;
-            }
-        }
-
-        public class WebSocketMessage
-        {
-            public byte OpCode { get; set; }
-            public byte[] Content { get; set; }
-        }
-
-        public class WebSocketFrame
-        {
-            public WebSocketFrameHeader Header { get; set; }
-            public byte[] Content { get; set; }
-        }
-
-        public class WebSocketFrameHeader
-        {
-            public bool IsLast { get; set; }
-            public byte OpCode { get; set; }
-            public ulong PayloadLength { get; set; }
-            public byte[] Mask { get; set; }
-        }
-
-        private WebSocketMessage ReadWebSocketMessage(NetworkStream stream)
-        {
-            List<WebSocketFrame> frames = new List<WebSocketFrame>();
-            WebSocketFrame firstFrame = null;
-            WebSocketFrame lastFrame = null;
-            ulong messageLength = 0;
-
-            while (lastFrame == null || !lastFrame.Header.IsLast)
-            {
-                lastFrame = ReadWebSocketFrame(stream);
-                if (firstFrame == null)
-                {
-                    firstFrame = lastFrame;
-                    if (firstFrame.Header.OpCode == WebSocketOpcodes.ContinuationFrame)
+                    if (frame.Header.OpCode == WebSocketOpcodes.ContinuationFrame)
                     {
-                        //todo: check what RFC recommends is such situation
-                        throw new HcduException(string.Format("Invalid first frame opcode: {0}.", firstFrame.Header.OpCode));
+                        throw new HcduException("Continuation frame cannot start message.");
                     }
+                    messageHeader = frame.Header;
                 }
 
-                if (WebSocketOpcodes.IsControlFrame(lastFrame.Header.OpCode))
-                {
-                    //todo: return separetely
-                }
-
-                frames.Add(lastFrame);
-                messageLength += lastFrame.Header.PayloadLength;
+                messageLength += frame.Header.PayloadLength;
                 if (messageLength > int.MaxValue)
                 {
                     throw new HcduException("Long messages are not supported.");
                 }
+
+                messageContent.Write(frame.Content, 0, frame.Content.Length);
+
+                if (frame.Header.IsLast)
+                {
+                    WebSocketMessage message = new WebSocketMessage();
+                    message.OpCode = messageHeader.OpCode;
+                    message.Content = messageContent.ToArray();
+                    
+                    messageHeader = null;
+                    messageContent = new MemoryStream();
+
+                    HandleWebSocketMessage(message);
+                }
             }
+        }
 
-            byte[] messageContent = new byte[messageLength];
-            int ofs = 0;
-
-            foreach (WebSocketFrame frame in frames)
+        private void HandleWebSocketControlFrame(WebSocketFrame frame)
+        {
+            if (frame.Header.OpCode == WebSocketOpcodes.ConnectionCloseFrame)
             {
-                Array.Copy(frame.Content, 0, messageContent, ofs, frame.Content.Length);
-                ofs += frame.Content.Length;
+                //todo: send close message
             }
+            if (frame.Header.OpCode == WebSocketOpcodes.PingFrame)
+            {
+                //todo: send pong
+            }
+            if (frame.Header.OpCode == WebSocketOpcodes.PongFrame)
+            {
+                //todo: check pong
+            }
+        }
 
-            WebSocketMessage message = new WebSocketMessage();
-
-            message.OpCode = firstFrame.Header.OpCode;
-            message.Content = messageContent;
-
-            return message;
+        private void HandleWebSocketMessage(WebSocketMessage message)
+        {
+            //todo: implement
         }
 
         private WebSocketFrame ReadWebSocketFrame(NetworkStream stream)
@@ -250,17 +206,6 @@ namespace HCDU.API.Server
             }
 
             return header;
-        }
-
-        private byte[] ReadBlock(NetworkStream stream, int blockLength)
-        {
-            byte[] buffer = new byte[blockLength];
-            int ofs = 0;
-            while (ofs < blockLength)
-            {
-                ofs += stream.Read(buffer, ofs, blockLength - ofs);
-            }
-            return buffer;
         }
 
         //WebSocket handshake is described here: https://tools.ietf.org/html/rfc6455#section-4.2.2
@@ -369,7 +314,7 @@ namespace HCDU.API.Server
                 {
                     throw new HcduException(string.Format("Invalid Content-Length header value: '{0}'.", contentLengthHeader.Value));
                 }
-                request.Body = ReadMessageBody(stream, contentLength);
+                request.Body = ReadBlock(stream, contentLength);
             }
             return request;
         }
@@ -467,20 +412,25 @@ namespace HCDU.API.Server
             return sb.ToString();
         }
 
-        private byte[] ReadMessageBody(NetworkStream stream, int contentLength)
+        private byte[] ReadBlock(NetworkStream stream, int blockLength)
         {
-            byte[] body = new byte[contentLength];
+            const int maxInitialSize = 4096;
+            MemoryStream mem = new MemoryStream(blockLength < maxInitialSize ? blockLength : maxInitialSize);
+            
+            byte[] buffer = new byte[4096];
 
-            int ofs = 0;
-
-            while (ofs < contentLength)
+            int restLength = blockLength;
+            while (restLength > 0)
             {
-                ofs += stream.Read(body, ofs, contentLength - ofs);
+                int bytesRead = stream.Read(buffer, 0, Math.Min(restLength, buffer.Length));
+                //todo: can bytesRead be zero ?
+                restLength -= bytesRead;
+                mem.Write(buffer, 0, bytesRead);
             }
 
-            return body;
+            return mem.ToArray();
         }
-
+        
         private static bool IsSpOrHt(char c)
         {
             return c == ' ' || c == '\t';
