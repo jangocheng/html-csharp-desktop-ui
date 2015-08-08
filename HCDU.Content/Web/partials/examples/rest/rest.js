@@ -20,6 +20,7 @@
             $scope.testWebsocket = function() {
                 var url = $scope.buildWebSocketUrl("/ws/test");
                 var ws = new WebSocket(url);
+                ws.onopen = function(evt) { ws.send("Test"); };
                 //todo: implement
             };
 

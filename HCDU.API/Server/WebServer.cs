@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -54,21 +55,216 @@ namespace HCDU.API.Server
                 if (IsWebSocketRequest(request))
                 {
                     HandleWebSocketRequest(stream, request);
-                    HttpResponse response = ProcessRequest(request);
-                    WriteResponse(stream, response);
                 }
                 else
                 {
-                    HttpResponse response = ProcessRequest(request);
-                    WriteResponse(stream, response);
+                    HandleHttpRequest(stream, request);
                 }
             }
 
             client.Close();
         }
 
-        //WebSocket handshake is described here: https://tools.ietf.org/html/rfc6455#section-4.2.2
+        private void HandleHttpRequest(NetworkStream stream, HttpRequest request)
+        {
+            HttpResponse response = ProcessRequest(request);
+            WriteResponse(stream, response);
+        }
+
         private void HandleWebSocketRequest(NetworkStream stream, HttpRequest request)
+        {
+            //todo: ProcessRequest and ProcessWebSocketRequest have different semantics
+            ProcessWebSocketRequest(stream, request);
+
+            SendWebSocketMessage(stream, "Hello.");
+
+            Thread thread = new Thread(() =>
+                                       {
+                                           Thread.Sleep(10000);
+                                           SendWebSocketMessage(stream, "Goodbye.");
+                                       });
+            thread.Start();
+
+            //todo: stop gracefully
+            while (true)
+            {
+                WebSocketMessage message = ReadWebSocketMessage(stream);
+
+                if (message.OpCode == WebSocketOpcodes.ConnectionCloseFrame)
+                {
+                    //todo: send close message
+                    return;
+                }
+                if (message.OpCode == WebSocketOpcodes.PingFrame)
+                {
+                    //todo: send pong
+                }
+                if (message.OpCode == WebSocketOpcodes.PongFrame)
+                {
+                    //todo: check pong
+                }
+                if (message.OpCode == WebSocketOpcodes.BinaryFrame || message.OpCode == WebSocketOpcodes.TextFrame)
+                {
+                    //todo: process message
+                }
+                //todo: check what RFC recommends is such situation
+                throw new HcduException(string.Format("Unecpected Opcode: {0}.", message.OpCode));
+            }
+        }
+
+        //todo: move to separate file
+        public class WebSocketOpcodes
+        {
+            public const byte ContinuationFrame = 0;
+            public const byte TextFrame = 1;
+            public const byte BinaryFrame = 2;
+            public const byte ConnectionCloseFrame = 8;
+            public const byte PingFrame = 9;
+            public const byte PongFrame = 10;
+
+            public static bool IsControlFrame(byte opcode)
+            {
+                return opcode >= 8;
+            }
+        }
+
+        public class WebSocketMessage
+        {
+            public byte OpCode { get; set; }
+            public byte[] Content { get; set; }
+        }
+
+        public class WebSocketFrame
+        {
+            public WebSocketFrameHeader Header { get; set; }
+            public byte[] Content { get; set; }
+        }
+
+        public class WebSocketFrameHeader
+        {
+            public bool IsLast { get; set; }
+            public byte OpCode { get; set; }
+            public ulong PayloadLength { get; set; }
+            public byte[] Mask { get; set; }
+        }
+
+        private WebSocketMessage ReadWebSocketMessage(NetworkStream stream)
+        {
+            List<WebSocketFrame> frames = new List<WebSocketFrame>();
+            WebSocketFrame firstFrame = null;
+            WebSocketFrame lastFrame = null;
+            ulong messageLength = 0;
+
+            while (lastFrame == null || !lastFrame.Header.IsLast)
+            {
+                lastFrame = ReadWebSocketFrame(stream);
+                if (firstFrame == null)
+                {
+                    firstFrame = lastFrame;
+                    if (firstFrame.Header.OpCode == WebSocketOpcodes.ContinuationFrame)
+                    {
+                        //todo: check what RFC recommends is such situation
+                        throw new HcduException(string.Format("Invalid first frame opcode: {0}.", firstFrame.Header.OpCode));
+                    }
+                }
+
+                if (WebSocketOpcodes.IsControlFrame(lastFrame.Header.OpCode))
+                {
+                    //todo: return separetely
+                }
+
+                frames.Add(lastFrame);
+                messageLength += lastFrame.Header.PayloadLength;
+                if (messageLength > int.MaxValue)
+                {
+                    throw new HcduException("Long messages are not supported.");
+                }
+            }
+
+            byte[] messageContent = new byte[messageLength];
+            int ofs = 0;
+
+            foreach (WebSocketFrame frame in frames)
+            {
+                Array.Copy(frame.Content, 0, messageContent, ofs, frame.Content.Length);
+                ofs += frame.Content.Length;
+            }
+
+            WebSocketMessage message = new WebSocketMessage();
+
+            message.OpCode = firstFrame.Header.OpCode;
+            message.Content = messageContent;
+
+            return message;
+        }
+
+        private WebSocketFrame ReadWebSocketFrame(NetworkStream stream)
+        {
+            WebSocketFrameHeader frameHeader = ReadWebSocketFrameHeader(stream);
+            if (frameHeader.PayloadLength > int.MaxValue)
+            {
+                throw new HcduException("Long messages are not supported.");
+            }
+            if (frameHeader.Mask == null)
+            {
+                throw new HcduException("Client messages should be masked.");
+            }
+
+            byte[] content = ReadBlock(stream, (int) frameHeader.PayloadLength);
+
+            if (frameHeader.Mask != null)
+            {
+                for (int i = 0; i < content.Length; i++)
+                {
+                    content[i] = (byte) (content[i] ^ frameHeader.Mask[i%4]);
+                }
+            }
+
+            WebSocketFrame frame = new WebSocketFrame();
+            frame.Header = frameHeader;
+            frame.Content = content;
+            return frame;
+        }
+
+        private WebSocketFrameHeader ReadWebSocketFrameHeader(NetworkStream stream)
+        {
+            byte[] primaryHeader = ReadBlock(stream, 2);
+
+            WebSocketFrameHeader header = new WebSocketFrameHeader();
+            header.IsLast = (primaryHeader[0] & 0x80) != 0;
+            header.OpCode = (byte) (primaryHeader[0] & 0x0F);
+            header.PayloadLength = (byte) (primaryHeader[1] & 0x7F);
+            if (header.PayloadLength == 126)
+            {
+                byte[] extLengthHeader = ReadBlock(stream, 2);
+                header.PayloadLength = BitConverter.ToUInt16(extLengthHeader, 0);
+            }
+            if (header.PayloadLength == 127)
+            {
+                byte[] extLengthHeader = ReadBlock(stream, 8);
+                header.PayloadLength = BitConverter.ToUInt64(extLengthHeader, 0);
+            }
+            if ((primaryHeader[0] & 0x80) != 0)
+            {
+                header.Mask = ReadBlock(stream, 4);
+            }
+
+            return header;
+        }
+
+        private byte[] ReadBlock(NetworkStream stream, int blockLength)
+        {
+            byte[] buffer = new byte[blockLength];
+            int ofs = 0;
+            while (ofs < blockLength)
+            {
+                ofs += stream.Read(buffer, ofs, blockLength - ofs);
+            }
+            return buffer;
+        }
+
+        //WebSocket handshake is described here: https://tools.ietf.org/html/rfc6455#section-4.2.2
+        private void ProcessWebSocketRequest(NetworkStream stream, HttpRequest request)
         {
             HttpHeader clientKeyHeader = request.Headers.FirstOrDefault(h => h.Name == HttpHeader.SecWebsocketKey);
             if (clientKeyHeader == null || string.IsNullOrWhiteSpace(clientKeyHeader.Value))
@@ -84,12 +280,6 @@ namespace HCDU.API.Server
             WriteHeader(stream, HttpHeader.Connection, HttpHeader.ConnectionUpgrade);
             WriteHeader(stream, HttpHeader.SecWebSocketAccept, serverKey);
             WriteLine(stream, "");
-
-            SendWebSocketMessage(stream, "Hello.");
-            Thread.Sleep(10000);
-            SendWebSocketMessage(stream, "Goodbye.");
-
-            //todo: send close message
         }
 
         //WebSocket message is desribed here: https://tools.ietf.org/html/rfc6455#section-5.2
@@ -99,7 +289,7 @@ namespace HCDU.API.Server
             byte[] messageBytes = encoding.GetBytes(message);
             if (messageBytes.Length > 125)
             {
-                throw new HcduException("Long messages are not supported yet.");
+                throw new HcduException("Long messages are not supported.");
             }
             byte[] frameHeader = new byte[2];
             frameHeader[0] = 0x81;
@@ -146,7 +336,7 @@ namespace HCDU.API.Server
             HttpRequest request = new HttpRequest();
 
             string requestLine = ReadLine(stream);
-            while(requestLine == "")
+            while (requestLine == "")
             {
                 requestLine = ReadLine(stream);
             }
@@ -172,7 +362,7 @@ namespace HCDU.API.Server
             }
 
             HttpHeader contentLengthHeader = request.Headers.FirstOrDefault(h => h.Name == HttpHeader.ContentLength);
-            if(contentLengthHeader != null)
+            if (contentLengthHeader != null)
             {
                 int contentLength;
                 if (!int.TryParse(contentLengthHeader.Value, out contentLength) || contentLength < 0)
@@ -267,7 +457,7 @@ namespace HCDU.API.Server
                 }
                 if (c != '\r')
                 {
-                    sb.Append((char)c);
+                    sb.Append((char) c);
                 }
             }
             if (delayedRequest)
