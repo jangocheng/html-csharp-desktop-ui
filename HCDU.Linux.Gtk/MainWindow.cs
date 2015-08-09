@@ -41,7 +41,7 @@ public partial class MainWindow: Gtk.Window
 	void StartServer (ContentPackage contentPackage)
 	{
 		webServer = new WebServer (contentPackage, 8899);
-		thread.Start ();
+		webServer.Start ();
 	}
 
 	void InitBrowser (ContentPackage contentPackage)
