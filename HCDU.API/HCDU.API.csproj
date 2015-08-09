@@ -43,6 +43,7 @@
     <Compile Include="ContentPackage.cs" />
     <Compile Include="DebugPages.cs" />
     <Compile Include="HcduException.cs" />
+    <Compile Include="Http\HttpMethod.cs" />
     <Compile Include="Http\HttpResponse.cs" />
     <Compile Include="IContentProvider.cs" />
     <Compile Include="IWebBrowserAdapter.cs" />
@@ -53,8 +54,10 @@
     <Compile Include="ResourceContentProvider.cs" />
     <Compile Include="Http\HttpHeader.cs" />
     <Compile Include="Http\HttpRequest.cs" />
+    <Compile Include="Server\HttpUtils.cs" />
     <Compile Include="Server\WebServer.cs" />
     <Compile Include="IPlatformAdapter.cs" />
+    <Compile Include="Server\WebSocket.cs" />
     <Compile Include="Server\WebSocketFrame.cs" />
     <Compile Include="Server\WebSocketFrameHeader.cs" />
     <Compile Include="Server\WebSocketMessage.cs" />

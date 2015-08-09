@@ -51,7 +51,7 @@ namespace HCDU.API
                 fileNameLength = 3;
             }
 
-            string path = string.Join("/", locationParts.Take(locationParts.Length - fileNameLength));
+            string path = string.Join("/", locationParts.Take(locationParts.Length - fileNameLength).Select(p => p.Replace('_', '-')));
             string filename = string.Join(".", locationParts.Skip(locationParts.Length - fileNameLength));
             return path + "/" + filename;
         }

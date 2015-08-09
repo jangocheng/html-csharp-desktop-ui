@@ -1,0 +1,11 @@
+<div ng-controller="BackendEventsExampleCtrl" layout="column">
+    <div layout="row">
+        <md-button class="md-raised" ng-click="testIncrement()">Increment On Server (+1)</md-button>
+        <md-button class="md-raised" ng-click="testIncrement5Sec()">Increment On Server (+10, within 5 seconds)</md-button>
+    </div>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <span>Counter: {{backendCounter}}</span>
+        </div>
+    </md-toolbar>
+</div>

@@ -11,6 +11,7 @@ app.controller('AppCtrl', [
             { name: 'about', title: 'About' },
             { name: 'text', title: 'Text Styles' },
             { name: 'rest', title: 'Rest Calls' },
+            { name: 'backend-events', title: 'Backend Events' },
             { name: 'dialogs', title: 'Dialogs' }
         ];
 
