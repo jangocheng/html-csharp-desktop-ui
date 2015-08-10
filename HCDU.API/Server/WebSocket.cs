@@ -19,8 +19,12 @@ namespace HCDU.API.Server
             this.isClosed = false;
         }
 
+        //todo: rename to handler?
+        public ISocket Socket { get; set; }
+
         public void HandleRequest(HttpRequest request)
         {
+            //todo: this method belongs to WebServer
             ProcessRequest(request);
 
             WebSocketFrameHeader messageHeader = null;
@@ -92,7 +96,16 @@ namespace HCDU.API.Server
 
         private void HandleMessage(WebSocketMessage message)
         {
-            //todo: implement
+            //todo: allow Socket to handle opcodes?
+            if (message.OpCode == WebSocketOpcodes.TextFrame)
+            {
+                Socket.ProcessMessage(message.GetText());
+            }
+            else if (message.OpCode == WebSocketOpcodes.BinaryFrame)
+            {
+                Socket.ProcessMessage(message.Content);
+            }
+            //todo: close connection?
         }
 
         private WebSocketFrame ReadFrame()

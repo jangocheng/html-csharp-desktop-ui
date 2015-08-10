@@ -62,6 +62,7 @@
     <Compile Include="Server\WebSocketFrameHeader.cs" />
     <Compile Include="Server\WebSocketMessage.cs" />
     <Compile Include="Server\WebSocketOpcodes.cs" />
+    <Compile Include="SocketPackage.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="page.template.html" />

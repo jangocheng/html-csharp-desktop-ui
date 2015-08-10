@@ -29,7 +29,7 @@
                 var url = $scope.buildWebSocketUrl("/ws/backend-events");
                 webSocket = new WebSocket(url);
 
-                //webSocket.onopen = function (evt) { webSocket.send('Test'); };
+                webSocket.onopen = function (evt) { webSocket.send('getState'); };
                 //webSocket.onclose = function (evt) { };
                 webSocket.onmessage = function (evt) {
                     $scope.$apply(function() {

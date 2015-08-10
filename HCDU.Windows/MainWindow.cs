@@ -25,14 +25,17 @@ namespace HCDU.Windows
             DebugPages.AppendTo(contentPackage);
             Platform.SetAdapter(new WinFormsPlatformAdapter(this));
 
-            StartServer(contentPackage);
+            SocketPackage socketPackage = new SocketPackage();
+            HcduContent.AppendTo(socketPackage);
+
+            StartServer(contentPackage, socketPackage);
 
             InitBrowser(contentPackage);
         }
 
-        void StartServer(ContentPackage contentPackage)
+        void StartServer(ContentPackage contentPackage, SocketPackage socketPackage)
         {
-            webServer = new WebServer(contentPackage, 8899);
+            webServer = new WebServer(contentPackage, socketPackage, 8899);
             webServer.Start();
         }
 

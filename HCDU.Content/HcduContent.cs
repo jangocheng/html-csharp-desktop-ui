@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading;
 using HCDU.API;
-using HCDU.API.Server;
 
 namespace HCDU.Content
 {
     public static class HcduContent
     {
-        private static int backendEventsCounter = 0;
+        private static int backendEventsCounter = 100;
+        private static readonly StateSocketProvider<int> stateSocket = new StateSocketProvider<int>();
 
         public static void AppendTo(ContentPackage contentPackage)
         {
@@ -20,12 +20,19 @@ namespace HCDU.Content
             contentPackage.AddMethod("rest/backend-events/increment5Sec", BackendEventsIncrement5Sec);
         }
 
+        public static void AppendTo(SocketPackage socketPackage)
+        {
+            socketPackage.AddSocketProvider("ws/backend-events", stateSocket);
+            stateSocket.State = backendEventsCounter;
+        }
+
         private static string BackendEventsIncrement()
         {
             Thread thread = new Thread(() =>
                                        {
                                            Interlocked.Increment(ref backendEventsCounter);
-                                           WebServer.SendMessage(backendEventsCounter.ToString());
+                                           stateSocket.State = backendEventsCounter;
+                                           stateSocket.SendState();
                                        });
             thread.IsBackground = true;
             thread.Start();
@@ -41,7 +48,8 @@ namespace HCDU.Content
                                            {
                                                Thread.Sleep(500);
                                                Interlocked.Increment(ref backendEventsCounter);
-                                               WebServer.SendMessage(backendEventsCounter.ToString());
+                                               stateSocket.State = backendEventsCounter;
+                                               stateSocket.SendState();
                                            }
                                        });
             thread.IsBackground = true;

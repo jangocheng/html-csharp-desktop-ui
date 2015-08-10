@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using HCDU.API.Http;
@@ -14,14 +11,13 @@ namespace HCDU.API.Server
     public class WebServer
     {
         private readonly ContentPackage contentPackage;
+        private readonly SocketPackage socketPackage;
         private readonly TcpListener tcpListener;
 
-        //todo: make thread safe and move to right place
-        private static readonly List<WebSocket> webSockets = new List<WebSocket>();
-
-        public WebServer(ContentPackage contentPackage, int port)
+        public WebServer(ContentPackage contentPackage, SocketPackage socketPackage, int port)
         {
             this.contentPackage = contentPackage;
+            this.socketPackage = socketPackage;
             tcpListener = new TcpListener(IPAddress.Loopback, port);
         }
 
@@ -60,9 +56,7 @@ namespace HCDU.API.Server
                 HttpRequest request = ReadRequest(stream);
                 if (IsWebSocketRequest(request))
                 {
-                    WebSocket socket = new WebSocket(stream);
-                    webSockets.Add(socket);
-                    socket.HandleRequest(request);
+                    HandleWebSocketRequest(stream, request);
                 }
                 else
                 {
@@ -73,8 +67,37 @@ namespace HCDU.API.Server
             client.Close();
         }
 
+        //todo: consider joining HandleWebSocketRequest and ProcessRequest to one method
+        private void HandleWebSocketRequest(NetworkStream stream, HttpRequest request)
+        {
+            //todo: can URI start with protocol?
+            string socketLocation = request.Uri.TrimStart('/');
+            ISocketProvider socketProvider = socketPackage.GetSocketProvider(socketLocation);
+
+            if (socketProvider == null)
+            {
+                HttpResponse response = HttpResponse.NotFound();
+                WriteResponse(stream, response);
+                return;
+            }
+
+            WebSocket webSocket = new WebSocket(stream);
+            ISocket socket = socketProvider.CreateSocket(webSocket);
+            webSocket.Socket = socket;
+            socket.OnCreate(socketProvider);
+            try
+            {
+                webSocket.HandleRequest(request);
+            }
+            finally
+            {
+                socket.OnDestroy(socketProvider);
+            }
+        }
+
         private void HandleHttpRequest(NetworkStream stream, HttpRequest request)
         {
+            //todo: handle HEAD method
             HttpResponse response = ProcessRequest(request);
             WriteResponse(stream, response);
         }
@@ -238,16 +261,6 @@ namespace HCDU.API.Server
         private static bool IsSpOrHt(char c)
         {
             return c == ' ' || c == '\t';
-        }
-
-        //todo: move to proper place
-        //todo: make async ?
-        public static void SendMessage(string message)
-        {
-            foreach (WebSocket webSocket in webSockets)
-            {
-                webSocket.SendMessage(message);
-            }
         }
     }
 }

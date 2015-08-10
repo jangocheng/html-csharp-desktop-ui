@@ -27,7 +27,10 @@ public partial class MainWindow: Gtk.Window
 		DebugPages.AppendTo(contentPackage);
 		Platform.SetAdapter(new GtkPlatformAdapter(this));
 
-		StartServer (contentPackage);
+        SocketPackage socketPackage = new SocketPackage();
+        HcduContent.AppendTo(socketPackage);
+
+        StartServer(contentPackage, socketPackage);
 
 		InitBrowser (contentPackage);
 	}
@@ -38,11 +41,11 @@ public partial class MainWindow: Gtk.Window
 		a.RetVal = true;
 	}
 
-	void StartServer (ContentPackage contentPackage)
-	{
-		webServer = new WebServer (contentPackage, 8899);
-		webServer.Start ();
-	}
+    void StartServer (ContentPackage contentPackage, SocketPackage socketPackage)
+    {
+        webServer = new WebServer(contentPackage, socketPackage, 8899);
+        webServer.Start();
+    }
 
 	void InitBrowser (ContentPackage contentPackage)
 	{
