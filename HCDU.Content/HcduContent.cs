@@ -16,6 +16,7 @@ namespace HCDU.Content
             contentPackage.AddMethod<Car>("rest/exception", () => { throw new Exception("Test Exception"); });
             contentPackage.AddMethod("rest/selectFolder", () => SelectFolder(false));
             contentPackage.AddMethod("rest/selectNewFolder", () => SelectFolder(true));
+            contentPackage.AddMethod("rest/showCustomDialog", () => ShowCustomDialog());
             contentPackage.AddMethod("rest/backend-events/increment", BackendEventsIncrement);
             contentPackage.AddMethod("rest/backend-events/increment5Sec", BackendEventsIncrement5Sec);
         }
@@ -61,6 +62,13 @@ namespace HCDU.Content
         private static string SelectFolder(bool allowCreateFolder)
         {
             return Platform.OpenFolderBrowserDialog(allowCreateFolder);
+        }
+
+        private static string ShowCustomDialog()
+        {
+            //todo: return result
+            Platform.ShowDialog("dialogs/custom-dialog/custom-dialog.html");
+            return "todo";
         }
     }
 

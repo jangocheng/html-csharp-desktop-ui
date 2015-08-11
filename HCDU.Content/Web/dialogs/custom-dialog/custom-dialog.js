@@ -4,7 +4,7 @@
 
     var app = angular.module('HcduApp');
 
-    app.controller('DialogsExampleCtrl', [
+    app.controller('CustomDialogCtrl', [
         '$scope', '$http', function($scope, $http) {
 
             $scope.response = null;

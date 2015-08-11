@@ -13,5 +13,10 @@ namespace HCDU.API
         {
             return adapter.OpenFolderBrowserDialog(allowCreateFolder);
         }
+
+        public static void ShowDialog(string url)
+        {
+            adapter.ShowDialog(url);
+        }
     }
 }

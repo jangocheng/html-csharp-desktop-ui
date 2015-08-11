@@ -20,7 +20,13 @@ namespace HCDU.Linux.Gtk
 			return InvokeSync(() => OpenFolderBrowserDialogHandler(allowCreateFolder));
 		}
 
-		//todo: review this approach, it does not look safe
+	    public void ShowDialog(string url)
+	    {
+            //todo: implement ShowDialog in GtkPlatformAdapter
+            throw new NotImplementedException();
+	    }
+
+	    //todo: review this approach, it does not look safe
 		private TResult InvokeSync<TResult>(Func<TResult> func)
 		{
 			TResult result = default(TResult);
