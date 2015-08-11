@@ -19,7 +19,7 @@ public partial class MainWindow: Gtk.Window
 	{
 		Build ();
 
-		//todo: bug, window cannot be resized to smaller size
+		//todo: bug, window cannot be resized to smaller size (seems related to https://bugs.webkit.org/show_bug.cgi?id=17154)
 		this.Resize (1024, 640);
 
 		ContentPackage contentPackage = new ContentPackage();
