@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using CefSharp.WinForms;
@@ -15,15 +16,13 @@ namespace HCDU.Windows
             windowStack.Push(mainWindow);
         }
 
-        private delegate string OpenFolderBrowserDialogDelegate(bool allowCreateFolder);
-
         public string OpenFolderBrowserDialog(bool allowCreateFolder)
         {
             Form parent = windowStack.Peek();
 
             if (parent.InvokeRequired)
             {
-                return (string) parent.Invoke(new OpenFolderBrowserDialogDelegate(OpenFolderBrowserDialog), allowCreateFolder);
+                return (string) parent.Invoke(new Func<bool, string>(OpenFolderBrowserDialog), allowCreateFolder);
             }
 
             FolderBrowserDialog dlg = new FolderBrowserDialog();
@@ -37,15 +36,13 @@ namespace HCDU.Windows
             return dlg.SelectedPath;
         }
 
-        private delegate void ShowDialogDelegate(string url);
-
         public void ShowDialog(string url)
         {
             Form parent = windowStack.Peek();
 
             if (parent.InvokeRequired)
             {
-                parent.Invoke(new ShowDialogDelegate(ShowDialog), url);
+                parent.Invoke(new Action<string>(ShowDialog), url);
                 return;
             }
 
@@ -53,9 +50,25 @@ namespace HCDU.Windows
             url = "http://localhost:8899/" + url;
 
             Form window = ConstructDialog(url);
-            
+            //todo: this is not very reliable way to forget window
+            window.Closed += (sender, args) => windowStack.Pop();
+            windowStack.Push(window);
+
             //todo: use ShowDialog when CefSharp 43 is released (now it freezes the application)
             window.Show(parent);
+        }
+
+        public void CloseDialog()
+        {
+            Form parent = windowStack.Peek();
+
+            if (parent.InvokeRequired)
+            {
+                parent.Invoke(new Action(CloseDialog));
+                return;
+            }
+
+            parent.Close();
         }
 
         private Form ConstructDialog(string url)

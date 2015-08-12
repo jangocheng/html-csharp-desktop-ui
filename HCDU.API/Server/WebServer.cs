@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -99,7 +100,14 @@ namespace HCDU.API.Server
         {
             //todo: handle HEAD method
             HttpResponse response = ProcessRequest(request);
-            WriteResponse(stream, response);
+            try
+            {
+                WriteResponse(stream, response);
+            }
+            catch (IOException)
+            {
+                //todo: log or just ignore?
+            }
         }
 
         private bool IsWebSocketRequest(HttpRequest request)

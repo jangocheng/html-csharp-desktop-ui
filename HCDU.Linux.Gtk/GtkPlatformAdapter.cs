@@ -26,6 +26,12 @@ namespace HCDU.Linux.Gtk
 			InvokeSync(() => ShowDialogHandler(url));
 	    }
 
+	    public void CloseDialog()
+	    {
+	        //todo: implement
+            throw new NotImplementedException();
+	    }
+
 	    //todo: review this approach, it does not look safe
 		private TResult InvokeSync<TResult>(Func<TResult> func)
 		{

@@ -7,27 +7,14 @@
     app.controller('CustomDialogCtrl', [
         '$scope', '$http', function($scope, $http) {
 
-            $scope.response = null;
-
-            $scope.selectFolder = function () {
-                $scope.testGet('rest/selectFolder');
-            };
-
-            $scope.selectNewFolder = function () {
-                $scope.testGet('rest/selectNewFolder');
-            };
-
-            $scope.showCustomDialog = function () {
-                $scope.testGet('rest/showCustomDialog');
-            };
-
-            $scope.testGet = function(url) {
-                $http.get(url).then(
+            $scope.closeDialog = function () {
+                //todo: find better solution for relative URLs
+                $http.get('../../rest/closeCustomDialog').then(
                     function(response) {
-                        $scope.response = response;
+                        //todo: implement
                     },
                     function(response) {
-                        $scope.response = response;
+                        //todo: implement
                     }
                 );
             };

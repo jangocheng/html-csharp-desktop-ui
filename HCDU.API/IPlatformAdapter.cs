@@ -4,5 +4,6 @@
     {
         string OpenFolderBrowserDialog(bool allowCreateFolder);
         void ShowDialog(string url);
+        void CloseDialog();
     }
 }

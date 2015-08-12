@@ -18,5 +18,10 @@ namespace HCDU.API
         {
             adapter.ShowDialog(url);
         }
+
+        public static void CloseDialog()
+        {
+            adapter.CloseDialog();
+        }
     }
 }

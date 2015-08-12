@@ -10,18 +10,18 @@
             $scope.response = null;
 
             $scope.selectFolder = function () {
-                $scope.testGet('rest/selectFolder');
+                $scope.performGet('rest/selectFolder');
             };
 
             $scope.selectNewFolder = function () {
-                $scope.testGet('rest/selectNewFolder');
+                $scope.performGet('rest/selectNewFolder');
             };
 
             $scope.showCustomDialog = function () {
-                $scope.testGet('rest/showCustomDialog');
+                $scope.performGet('rest/showCustomDialog');
             };
 
-            $scope.testGet = function(url) {
+            $scope.performGet = function (url) {
                 $http.get(url).then(
                     function(response) {
                         $scope.response = response;

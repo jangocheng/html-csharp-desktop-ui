@@ -10,7 +10,13 @@
 </head>
 <body layout="column" ng-controller="CustomDialogCtrl">
 
-<h2>Custom Dialog Example</h2>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span>Custom Dialog Example</span>
+    </div>
+</md-toolbar>
+
+<md-button class="md-raised" ng-click="closeDialog()">Close Dialog</md-button>
 
 <!-- Angular Material Dependencies -->
 <script src="../../script/libs/angular.min.js"></script>
@@ -18,7 +24,7 @@
 <script src="../../script/libs/angular-aria.min.js"></script>
 
 <!-- Angular Material -->
-<script src="../script/libs/angular-material.min.js"></script>
+<script src="../../script/libs/angular-material.min.js"></script>
 
 <!-- Application -->
 <script src="../../script/app.js"></script>
