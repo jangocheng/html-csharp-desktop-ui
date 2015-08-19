@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using CefSharp;
 using CefSharp.WinForms;
-using HCDU.API;
-using HCDU.API.Server;
-using HCDU.Content;
 
 namespace HCDU.Windows
 {
@@ -14,33 +10,21 @@ namespace HCDU.Windows
         private const string BaseUrl = "http://localhost:8899/";
         private const string HomePageUrl = BaseUrl + "index.html";
 
-        private WebServer webServer;
         private ChromiumWebBrowser webBrowser;
+
+        public ChromiumWebBrowser WebBrowser
+        {
+            get { return webBrowser; }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            ContentPackage contentPackage = new ContentPackage();
-            HcduContent.AppendTo(contentPackage);
-            DebugPages.AppendTo(contentPackage);
-            Platform.SetAdapter(new WinFormsPlatformAdapter(this));
-
-            SocketPackage socketPackage = new SocketPackage();
-            HcduContent.AppendTo(socketPackage);
-
-            StartServer(contentPackage, socketPackage);
-
-            InitBrowser(contentPackage);
+            InitBrowser();
         }
 
-        void StartServer(ContentPackage contentPackage, SocketPackage socketPackage)
-        {
-            webServer = new WebServer(contentPackage, socketPackage, 8899);
-            webServer.Start();
-        }
-
-        private void InitBrowser(ContentPackage contentPackage)
+        private void InitBrowser()
         {
             webBrowser = new ChromiumWebBrowser("about:blank");
             webBrowser.Name = "webBrowser";
@@ -51,7 +35,6 @@ namespace HCDU.Windows
 
             webBrowserPanel.Controls.Add(webBrowser);
 
-            webBrowser.ResourceHandlerFactory = new ContentPackageResourceHandlerFactory(BaseUrl, contentPackage);
             webBrowser.Load(HomePageUrl);
         }
 

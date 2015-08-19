@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
+using HCDU.API;
+using HCDU.Content;
 
 namespace HCDU.Windows
 {
@@ -13,7 +15,17 @@ namespace HCDU.Windows
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
+
+            ApplicationContainer container = new ApplicationContainer();
+            container.Platform = new WinFormsPlatformAdapter();
+            container.ApplicationPackage = new HcduContent();
+            
+            MainWindow mainWindow = new MainWindow();
+            container.Start(mainWindow, mainWindow.WebBrowser);
+
+            //todo: use ApplicationContext instead ?
+            //Application.Run((Form) container.CreateMainWindow());
+            Application.Run(mainWindow);
         }
     }
 }

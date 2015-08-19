@@ -2,8 +2,10 @@
 {
     public interface IPlatformAdapter
     {
-        string OpenFolderBrowserDialog(bool allowCreateFolder);
-        void ShowDialog(string url);
-        void CloseDialog();
+        WindowHandle CreateWindow(WindowPrototype prototype);
+        //todo: ShowDialog should use WindowHandle instead. Or it should be used as ShowWindow.
+        WindowHandle ShowDialog(WindowHandle parent, WindowPrototype prototype);
+        void CloseDialog(WindowHandle win);
+        string OpenFolderBrowserDialog(WindowHandle parent, bool allowCreateFolder);
     }
 }

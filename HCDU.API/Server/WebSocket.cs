@@ -81,7 +81,14 @@ namespace HCDU.API.Server
         {
             if (frame.Header.OpCode == WebSocketOpcodes.ConnectionCloseFrame)
             {
-                SendMessage(WebSocketOpcodes.ConnectionCloseFrame, frame.Content);
+                try
+                {
+                    SendMessage(WebSocketOpcodes.ConnectionCloseFrame, frame.Content);
+                }
+                catch (IOException)
+                {
+                    //todo: use more general approach for exception handling
+                }
                 isClosed = true;
             }
             if (frame.Header.OpCode == WebSocketOpcodes.PingFrame)

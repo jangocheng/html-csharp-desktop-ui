@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using CefSharp.WinForms;
@@ -9,26 +8,19 @@ namespace HCDU.Windows
 {
     public class WinFormsPlatformAdapter : IPlatformAdapter
     {
-        private readonly Stack<Form> windowStack = new Stack<Form>();
-
-        public WinFormsPlatformAdapter(Form mainWindow)
+        public string OpenFolderBrowserDialog(WindowHandle parent, bool allowCreateFolder)
         {
-            windowStack.Push(mainWindow);
-        }
+            Form parentForm = (Form)parent.NativeWindow;
 
-        public string OpenFolderBrowserDialog(bool allowCreateFolder)
-        {
-            Form parent = windowStack.Peek();
-
-            if (parent.InvokeRequired)
+            if (parentForm.InvokeRequired)
             {
-                return (string) parent.Invoke(new Func<bool, string>(OpenFolderBrowserDialog), allowCreateFolder);
+                return (string) parentForm.Invoke(new Func<WindowHandle, bool, string>(OpenFolderBrowserDialog), parent, allowCreateFolder);
             }
 
             FolderBrowserDialog dlg = new FolderBrowserDialog();
             dlg.ShowNewFolderButton = allowCreateFolder;
 
-            if (dlg.ShowDialog(parent) != DialogResult.OK)
+            if (dlg.ShowDialog(parentForm) != DialogResult.OK)
             {
                 return null;
             }
@@ -36,50 +28,54 @@ namespace HCDU.Windows
             return dlg.SelectedPath;
         }
 
-        public void ShowDialog(string url)
+        public WindowHandle CreateWindow(WindowPrototype prototype)
         {
-            Form parent = windowStack.Peek();
+            return ConstructDialog(prototype);
+        }
 
-            if (parent.InvokeRequired)
+        public WindowHandle ShowDialog(WindowHandle parent, WindowPrototype prototype)
+        {
+            Form parentForm = (Form) parent.NativeWindow;
+
+            if (parentForm.InvokeRequired)
             {
-                parent.Invoke(new Action<string>(ShowDialog), url);
-                return;
+                return (WindowHandle) parentForm.Invoke(new Func<WindowHandle, WindowPrototype, WindowHandle>(ShowDialog), parent, prototype);
             }
 
-            //todo: remove base URL from here
-            url = "http://localhost:8899/" + url;
-
-            Form window = ConstructDialog(url);
-            //todo: this is not very reliable way to forget window
-            window.Closed += (sender, args) => windowStack.Pop();
-            windowStack.Push(window);
+            WindowHandle handle = ConstructDialog(prototype);
+            Form window = (Form) handle.NativeWindow;
+            window.Closed += (sender, args) => prototype.OnClose(handle);
 
             //todo: use ShowDialog when CefSharp 43 is released (now it freezes the application)
-            window.Show(parent);
+            window.Show(parentForm);
+
+            //todo: this would conflict with window.ShowDialog
+            return handle;
         }
 
-        public void CloseDialog()
+        public void CloseDialog(WindowHandle win)
         {
-            Form parent = windowStack.Peek();
+            Form form = (Form) win.NativeWindow;
 
-            if (parent.InvokeRequired)
+            if (form.InvokeRequired)
             {
-                parent.Invoke(new Action(CloseDialog));
+                form.Invoke(new Action<WindowHandle>(CloseDialog), win);
                 return;
             }
 
-            parent.Close();
+            form.Close();
         }
 
-        private Form ConstructDialog(string url)
+        private WindowHandle ConstructDialog(WindowPrototype prototype)
         {
             Form form = new Form();
 
             //todo: is SuspendLayout/ResumeLayout required?
             form.SuspendLayout();
-            ChromiumWebBrowser webBrowser = new ChromiumWebBrowser(url);
+
+            ChromiumWebBrowser webBrowser = new ChromiumWebBrowser(prototype.Url);
             form.Controls.Add(webBrowser);
-            webBrowser = new ChromiumWebBrowser("about:blank");
+
             webBrowser.Name = "webBrowser";
             webBrowser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             webBrowser.Location = new Point(0, 0);
@@ -90,7 +86,7 @@ namespace HCDU.Windows
             //todo: is SuspendLayout/ResumeLayout required?
             form.ResumeLayout();
 
-            return form;
+            return new WindowHandle(form, webBrowser);
         }
     }
 }

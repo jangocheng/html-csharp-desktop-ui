@@ -1,5 +1,6 @@
-﻿using System;
-using Gtk;
+﻿using Gtk;
+using HCDU.API;
+using HCDU.Content;
 
 namespace HCDU.Linux.Gtk
 {
@@ -8,8 +9,18 @@ namespace HCDU.Linux.Gtk
 		public static void Main (string[] args)
 		{
 			Application.Init ();
-			MainWindow win = new MainWindow ();
-			win.Show ();
+
+            ApplicationContainer container = new ApplicationContainer();
+            container.Platform = new GtkPlatformAdapter();
+            container.ApplicationPackage = new HcduContent();
+
+            //todo: use generic window creation approach
+            //Window mainWindow = container.CreateMainWindow();
+
+            MainWindow mainWindow = new MainWindow();
+            container.Start(mainWindow, mainWindow.WebBrowser);
+
+            mainWindow.Show();
 			Application.Run ();
 		}
 	}

@@ -13,13 +13,20 @@ namespace HCDU.API.Server
     {
         private readonly ContentPackage contentPackage;
         private readonly SocketPackage socketPackage;
+        private readonly int port;
         private readonly TcpListener tcpListener;
 
         public WebServer(ContentPackage contentPackage, SocketPackage socketPackage, int port)
         {
             this.contentPackage = contentPackage;
             this.socketPackage = socketPackage;
+            this.port = port;
             tcpListener = new TcpListener(IPAddress.Loopback, port);
+        }
+
+        public int Port
+        {
+            get { return port; }
         }
 
         public void Start()

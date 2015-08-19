@@ -7,120 +7,117 @@ using WebKit;
 
 namespace HCDU.Linux.Gtk
 {
-	public class GtkPlatformAdapter : IPlatformAdapter
-	{
-		private readonly Stack<Window> windowStack = new Stack<Window>();
+    public class GtkPlatformAdapter : IPlatformAdapter
+    {
+        public string OpenFolderBrowserDialog(WindowHandle parent, bool allowCreateFolder)
+        {
+            return InvokeSync(() => OpenFolderBrowserDialogHandler((Window) parent.NativeWindow, allowCreateFolder));
+        }
 
-		public GtkPlatformAdapter(Window mainWindow)
-		{
-			windowStack.Push(mainWindow);
-		}
-
-		public string OpenFolderBrowserDialog(bool allowCreateFolder)
-		{
-			return InvokeSync(() => OpenFolderBrowserDialogHandler(allowCreateFolder));
-		}
-
-	    public void ShowDialog(string url)
-	    {
-			InvokeSync(() => ShowDialogHandler(url));
-	    }
-
-	    public void CloseDialog()
-	    {
-	        //todo: implement
+        public WindowHandle CreateWindow(WindowPrototype prototype)
+        {
             throw new NotImplementedException();
-	    }
+        }
 
-	    //todo: review this approach, it does not look safe
-		private TResult InvokeSync<TResult>(Func<TResult> func)
-		{
-			TResult result = default(TResult);
-			ManualResetEvent ev = new ManualResetEvent(false);
-			Application.Invoke (delegate {
-				try{
-					result = func();
-				}
-				finally{
-					ev.Set();
-				}
-			});
-			ev.WaitOne ();
-			return result;
-		}
+        public WindowHandle ShowDialog(WindowHandle parent, WindowPrototype prototype)
+        {
+            return InvokeSync(() => ShowDialogHandler((Window) parent.NativeWindow, prototype));
+        }
 
-		private bool ShowDialogHandler(string url)
-		{
-			//todo: remove base URL from here
-			//url = "http://localhost:8899/" + url;
-			url = "http://localhost:8899/index.html";
+        public void CloseDialog(WindowHandle win)
+        {
+            //todo: implement
+            throw new NotImplementedException();
+        }
 
-			//todo: is this a worng place to pick window ? (seems not threadsafe)
-			Window parent = windowStack.Peek();
-			BrowserWindow win = new BrowserWindow (url);
+        //todo: review this approach, it does not look safe
+        private TResult InvokeSync<TResult>(Func<TResult> func)
+        {
+            TResult result = default(TResult);
+            ManualResetEvent ev = new ManualResetEvent(false);
+            Application.Invoke(delegate
+                               {
+                                   try
+                                   {
+                                       result = func();
+                                   }
+                                   finally
+                                   {
+                                       ev.Set();
+                                   }
+                               });
+            ev.WaitOne();
+            return result;
+        }
 
-			win.TransientFor = parent;
-			win.Modal = true;
-			win.SkipTaskbarHint = true;
-			win.TypeHint = Gdk.WindowTypeHint.Dialog;
-			//todo: bug, window cannot be resized to smaller size (seems related to https://bugs.webkit.org/show_bug.cgi?id=17154)
-			win.Resize (1024, 640);
-			win.ShowAll ();
+        private WindowHandle ShowDialogHandler(Window parent, WindowPrototype prototype)
+        {
+            BrowserWindow win = new BrowserWindow(prototype.Url);
 
-			//todo: this is fake result
-			return true;
-		}
+            win.TransientFor = parent;
+            win.Modal = true;
+            win.SkipTaskbarHint = true;
+            win.TypeHint = Gdk.WindowTypeHint.Dialog;
+            //todo: bug, window cannot be resized to smaller size (seems related to https://bugs.webkit.org/show_bug.cgi?id=17154)
+            win.Resize(1024, 640);
+            win.ShowAll();
 
-		private string OpenFolderBrowserDialogHandler(bool allowCreateFolder)
-		{
-			//todo: is this a worng place to pick window ? (seems not threadsafe)
-			Window parent = windowStack.Peek();
-			FileChooserAction action = allowCreateFolder ? FileChooserAction.CreateFolder: FileChooserAction.SelectFolder;
+            return new WindowHandle(win, win.WebBrowser);
+        }
 
-			FileChooserDialog dlg = new FileChooserDialog(
-				"Select a folder",
-				parent,
-				action, 
-				"Cancel", ResponseType.Cancel,
-				"Open", ResponseType.Accept
-			);
+        private string OpenFolderBrowserDialogHandler(Window parent, bool allowCreateFolder)
+        {
+            FileChooserAction action = allowCreateFolder ? FileChooserAction.CreateFolder : FileChooserAction.SelectFolder;
 
-			string result = null;
+            FileChooserDialog dlg = new FileChooserDialog(
+                "Select a folder",
+                parent,
+                action,
+                "Cancel", ResponseType.Cancel,
+                "Open", ResponseType.Accept
+                );
 
-			if (dlg.Run () == (int)ResponseType.Accept)
-			{
-				result = dlg.Filename;
-			}
+            string result = null;
 
-			dlg.Destroy ();
+            if (dlg.Run() == (int) ResponseType.Accept)
+            {
+                result = dlg.Filename;
+            }
 
-			return result;
-		}
-	}
+            dlg.Destroy();
 
-	public class BrowserWindow : Window
-	{
-		private WebView webBrowser;
+            return result;
+        }
+    }
 
-		public BrowserWindow(string url) : base (WindowType.Toplevel)
-		{
-			InitBrowser (url);
-		}
+    public class BrowserWindow : Window
+    {
+        private WebView webBrowser;
 
-		private void InitBrowser(string url)
-		{
-			webBrowser = new WebView ();
-			webBrowser.Name = "webBrowser";
+        public WebView WebBrowser
+        {
+            get { return webBrowser; }
+        }
 
-			VBox vbox = new VBox ();
-			vbox.Name = "vbox";
-			this.Add (vbox);
+        public BrowserWindow(string url) : base(WindowType.Toplevel)
+        {
+            InitBrowser(url);
+        }
 
-			vbox.Add (webBrowser);
-			global::Gtk.Box.BoxChild webBrowserBox = ((global::Gtk.Box.BoxChild)(vbox [webBrowser]));
-			webBrowserBox.Position = 0;
+        private void InitBrowser(string url)
+        {
+            webBrowser = new WebView();
+            webBrowser.Name = "webBrowser";
 
-			webBrowser.LoadUri(url);
-		}
-	}
+            VBox vbox = new VBox();
+            vbox.Name = "vbox";
+            this.Add(vbox);
+
+            vbox.Add(webBrowser);
+            global::Gtk.Box.BoxChild webBrowserBox = ((global::Gtk.Box.BoxChild) (vbox[webBrowser]));
+            webBrowserBox.Position = 0;
+
+            webBrowser.LoadUri(url);
+        }
+    }
 }
