@@ -33,11 +33,13 @@ namespace HCDU.API
         }
     }
 
+    //todo: move to another file
     public interface ISocketProvider
     {
         ISocket CreateSocket(WebSocket webSocket);
     }
 
+    //todo: move to another file
     public interface ISocket
     {
         void ProcessMessage(string message);
@@ -49,6 +51,7 @@ namespace HCDU.API
         void OnDestroy(ISocketProvider provider);
     }
 
+    //todo: move to another file
     public class StateSocketProvider<T> : ISocketProvider
     {
         //todo: ensure thread-safe access

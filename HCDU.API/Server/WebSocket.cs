@@ -1,10 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
-using HCDU.API.Http;
 
 namespace HCDU.API.Server
 {
@@ -19,14 +16,25 @@ namespace HCDU.API.Server
             this.isClosed = false;
         }
 
-        //todo: rename to handler?
-        public ISocket Socket { get; set; }
+        public IWebSocketHandler Handler { get; private set; }
 
-        public void HandleRequest(HttpRequest request)
+        public void Listen(IWebSocketHandler handler)
         {
-            //todo: this method belongs to WebServer
-            ProcessRequest(request);
+            Handler = handler;
 
+            Handler.OnConnent();
+            try
+            {
+                ListenerLoop();
+            }
+            finally
+            {
+                Handler.OnDisconnect();
+            }
+        }
+
+        private void ListenerLoop()
+        {
             WebSocketFrameHeader messageHeader = null;
             MemoryStream messageContent = new MemoryStream();
             ulong messageLength = 0;
@@ -106,11 +114,11 @@ namespace HCDU.API.Server
             //todo: allow Socket to handle opcodes?
             if (message.OpCode == WebSocketOpcodes.TextFrame)
             {
-                Socket.ProcessMessage(message.GetText());
+                Handler.ProcessMessage(message.GetText());
             }
             else if (message.OpCode == WebSocketOpcodes.BinaryFrame)
             {
-                Socket.ProcessMessage(message.Content);
+                Handler.ProcessMessage(message.Content);
             }
             //todo: close connection?
         }
@@ -169,25 +177,6 @@ namespace HCDU.API.Server
             return header;
         }
 
-        //WebSocket handshake is described here: https://tools.ietf.org/html/rfc6455#section-4.2.2
-        private void ProcessRequest(HttpRequest request)
-        {
-            HttpHeader clientKeyHeader = request.Headers.FirstOrDefault(h => h.Name == HttpHeader.SecWebsocketKey);
-            if (clientKeyHeader == null || string.IsNullOrWhiteSpace(clientKeyHeader.Value))
-            {
-                //todo: send error response instead
-                throw new HcduException(string.Format("{0} header is missing.", HttpHeader.SecWebsocketKey));
-            }
-            string clientKey = clientKeyHeader.Value;
-            string serverKey = CreateServerKey(clientKey);
-
-            HttpUtils.WriteLine(stream, "HTTP/1.1 101 Switching Protocols");
-            HttpUtils.WriteHeader(stream, HttpHeader.Upgrade, HttpHeader.UpgradeWebsocket);
-            HttpUtils.WriteHeader(stream, HttpHeader.Connection, HttpHeader.ConnectionUpgrade);
-            HttpUtils.WriteHeader(stream, HttpHeader.SecWebSocketAccept, serverKey);
-            HttpUtils.WriteLine(stream, "");
-        }
-
         public void SendMessage(string message)
         {
             UTF8Encoding encoding = new UTF8Encoding(false);
@@ -213,14 +202,6 @@ namespace HCDU.API.Server
             frameHeader[1] = (byte) content.Length;
             stream.Write(frameHeader, 0, frameHeader.Length);
             stream.Write(content, 0, content.Length);
-        }
-
-        private string CreateServerKey(string clientKey)
-        {
-            string value = clientKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-            SHA1 sha1 = SHA1.Create();
-            byte[] valueSha1 = sha1.ComputeHash(Encoding.ASCII.GetBytes(value));
-            return Convert.ToBase64String(valueSha1);
         }
     }
 }

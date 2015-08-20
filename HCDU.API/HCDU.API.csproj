@@ -48,7 +48,6 @@
     <Compile Include="Http\HttpMethod.cs" />
     <Compile Include="Http\HttpResponse.cs" />
     <Compile Include="IContentProvider.cs" />
-    <Compile Include="IWebBrowserAdapter.cs" />
     <Compile Include="MethodContentProvider.cs" />
     <Compile Include="Http\MimeTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,6 +55,9 @@
     <Compile Include="Http\HttpHeader.cs" />
     <Compile Include="Http\HttpRequest.cs" />
     <Compile Include="Server\HttpUtils.cs" />
+    <Compile Include="Server\IWebRequestHandler.cs" />
+    <Compile Include="Server\IWebSocketHandler.cs" />
+    <Compile Include="WebRequestHandler.cs" />
     <Compile Include="Server\WebServer.cs" />
     <Compile Include="IPlatformAdapter.cs" />
     <Compile Include="Server\WebSocket.cs" />
@@ -64,6 +66,7 @@
     <Compile Include="Server\WebSocketMessage.cs" />
     <Compile Include="Server\WebSocketOpcodes.cs" />
     <Compile Include="SocketPackage.cs" />
+    <Compile Include="WebSocketHandler.cs" />
     <Compile Include="WindowHandle.cs" />
     <Compile Include="WindowPrototype.cs" />
   </ItemGroup>

@@ -24,7 +24,8 @@ namespace HCDU.API
         public void Start()
         {
             ApplicationPackage.Container = this;
-            webServer = new WebServer(ApplicationPackage.Content, ApplicationPackage.Sockets, 8899);
+            WebRequestHandler requestHandler = new WebRequestHandler(ApplicationPackage.Content, ApplicationPackage.Sockets);
+            webServer = new WebServer(requestHandler, 8899);
             webServer.Start();
             ApplicationPackage.OnStart();
         }
