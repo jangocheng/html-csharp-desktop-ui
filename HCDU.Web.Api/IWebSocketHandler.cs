@@ -1,4 +1,4 @@
-﻿namespace HCDU.API.Server
+﻿namespace HCDU.Web.Api
 {
     public interface IWebSocketHandler
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using HCDU.API.Server;
+using HCDU.Web.Api;
 
 namespace HCDU.API
 {
@@ -36,7 +36,7 @@ namespace HCDU.API
     //todo: move to another file
     public interface ISocketProvider
     {
-        ISocket CreateSocket(WebSocket webSocket);
+        ISocket CreateSocket(IWebSocket webSocket);
     }
 
     //todo: move to another file
@@ -59,7 +59,7 @@ namespace HCDU.API
 
         public T State { get; set; }
 
-        public ISocket CreateSocket(WebSocket webSocket)
+        public ISocket CreateSocket(IWebSocket webSocket)
         {
             return new StateSocket<T>(this, webSocket);
         }
@@ -86,9 +86,9 @@ namespace HCDU.API
     public class StateSocket<T> : ISocket
     {
         private readonly StateSocketProvider<T> socketProvider;
-        private readonly WebSocket webSocket;
+        private readonly IWebSocket webSocket;
 
-        public StateSocket(StateSocketProvider<T> socketProvider, WebSocket webSocket)
+        public StateSocket(StateSocketProvider<T> socketProvider, IWebSocket webSocket)
         {
             this.socketProvider = socketProvider;
             this.webSocket = webSocket;

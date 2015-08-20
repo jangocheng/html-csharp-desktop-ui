@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using HCDU.API.Http;
+using HCDU.Web.Api;
 
 namespace HCDU.API.Server
 {

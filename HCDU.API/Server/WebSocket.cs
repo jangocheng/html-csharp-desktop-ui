@@ -2,10 +2,11 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using HCDU.Web.Api;
 
 namespace HCDU.API.Server
 {
-    public class WebSocket
+    public class WebSocket : IWebSocket
     {
         private readonly NetworkStream stream;
         private bool isClosed;

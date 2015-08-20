@@ -1,4 +1,4 @@
-﻿namespace HCDU.API.Http
+﻿namespace HCDU.Web.Api
 {
     public static class HttpMethod
     {

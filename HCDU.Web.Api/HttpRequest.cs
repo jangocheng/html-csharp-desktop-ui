@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace HCDU.API.Http
+namespace HCDU.Web.Api
 {
     public class HttpRequest
     {

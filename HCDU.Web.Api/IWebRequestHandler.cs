@@ -1,6 +1,4 @@
-﻿using HCDU.API.Http;
-
-namespace HCDU.API.Server
+﻿namespace HCDU.Web.Api
 {
     public interface IWebRequestHandler
     {
@@ -8,6 +6,6 @@ namespace HCDU.API.Server
         
         bool CanCreateWebSocketHandler(HttpRequest request);
 
-        IWebSocketHandler CreateWebSocketHandler(HttpRequest request, WebSocket webSocket);
+        IWebSocketHandler CreateWebSocketHandler(HttpRequest request, IWebSocket webSocket);
     }
 }

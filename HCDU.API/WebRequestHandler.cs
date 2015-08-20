@@ -1,5 +1,4 @@
-﻿using HCDU.API.Http;
-using HCDU.API.Server;
+﻿using HCDU.Web.Api;
 
 namespace HCDU.API
 {
@@ -34,7 +33,7 @@ namespace HCDU.API
             return socketProvider != null;
         }
 
-        public IWebSocketHandler CreateWebSocketHandler(HttpRequest request, WebSocket webSocket)
+        public IWebSocketHandler CreateWebSocketHandler(HttpRequest request, IWebSocket webSocket)
         {
             ISocketProvider socketProvider = GetSocketProvider(request.Uri);
             ISocket socket = socketProvider.CreateSocket(webSocket);
