@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace HCDU.API.Server
+namespace HCDU.Web.Server
 {
     public class WebSocketMessage
     {

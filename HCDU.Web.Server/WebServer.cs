@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using HCDU.Web.Api;
 
-namespace HCDU.API.Server
+namespace HCDU.Web.Server
 {
     public class WebServer
     {
@@ -121,7 +121,7 @@ namespace HCDU.API.Server
             if (clientKeyHeader == null || string.IsNullOrWhiteSpace(clientKeyHeader.Value))
             {
                 //todo: send error response instead
-                throw new HcduException(string.Format("{0} header is missing.", HttpHeader.SecWebsocketKey));
+                throw new HcduServerException(string.Format("{0} header is missing.", HttpHeader.SecWebsocketKey));
             }
             string clientKey = clientKeyHeader.Value;
             string serverKey = CreateWebSocketServerKey(clientKey);
@@ -163,7 +163,7 @@ namespace HCDU.API.Server
                 {
                     if (lastHeader == null)
                     {
-                        throw new HcduException(string.Format("Invalid HTTP-message header: '{0}'.", headerLine));
+                        throw new HcduServerException(string.Format("Invalid HTTP-message header: '{0}'.", headerLine));
                     }
                     lastHeader.Value += ' ' + headerLine.TrimStart(' ', '\t');
                 }
@@ -176,7 +176,7 @@ namespace HCDU.API.Server
 
             if (IsWebSocketRequest(request) && request.Method != HttpMethod.Get)
             {
-                throw new HcduException(string.Format("WebSocket request has invalid method: '{0}'.", request.Method));
+                throw new HcduServerException(string.Format("WebSocket request has invalid method: '{0}'.", request.Method));
             }
 
             HttpHeader contentLengthHeader = request.Headers.FirstOrDefault(h => h.Name == HttpHeader.ContentLength);
@@ -187,7 +187,7 @@ namespace HCDU.API.Server
                 int contentLength;
                 if (!int.TryParse(contentLengthHeader.Value, out contentLength) || contentLength < 0)
                 {
-                    throw new HcduException(string.Format("Invalid Content-Length header value: '{0}'.", contentLengthHeader.Value));
+                    throw new HcduServerException(string.Format("Invalid Content-Length header value: '{0}'.", contentLengthHeader.Value));
                 }
                 request.Body = HttpUtils.ReadBlock(stream, contentLength);
             }
@@ -222,7 +222,7 @@ namespace HCDU.API.Server
             string[] parts = requestLine.Split(' ');
             if (parts.Length != 3)
             {
-                throw new HcduException(string.Format("Invalid Request-Line: '{0}'.", requestLine));
+                throw new HcduServerException(string.Format("Invalid Request-Line: '{0}'.", requestLine));
             }
             request.Method = parts[0];
             request.Uri = parts[1];
@@ -234,7 +234,7 @@ namespace HCDU.API.Server
             int pos = headerLine.IndexOf(':');
             if (pos < 0)
             {
-                throw new HcduException(string.Format("Invalid HTTP-message header: '{0}'.", headerLine));
+                throw new HcduServerException(string.Format("Invalid HTTP-message header: '{0}'.", headerLine));
             }
 
             HttpHeader header = new HttpHeader();

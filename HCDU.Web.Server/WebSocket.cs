@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using HCDU.Web.Api;
 
-namespace HCDU.API.Server
+namespace HCDU.Web.Server
 {
     public class WebSocket : IWebSocket
     {
@@ -50,7 +50,7 @@ namespace HCDU.API.Server
                     //todo: remove magic number
                     if (!frame.Header.IsLast || frame.Header.PayloadLength > 125)
                     {
-                        throw new HcduException(string.Format("Invalid control frame (Opcode: {0}, FIN: {1}, Length: {2}).", frame.Header.OpCode, frame.Header.IsLast, frame.Header.PayloadLength));
+                        throw new HcduServerException(string.Format("Invalid control frame (Opcode: {0}, FIN: {1}, Length: {2}).", frame.Header.OpCode, frame.Header.IsLast, frame.Header.PayloadLength));
                     }
                     HandleControlFrame(frame);
                 }
@@ -59,7 +59,7 @@ namespace HCDU.API.Server
                 {
                     if (frame.Header.OpCode == WebSocketOpcodes.ContinuationFrame)
                     {
-                        throw new HcduException("Continuation frame cannot start message.");
+                        throw new HcduServerException("Continuation frame cannot start message.");
                     }
                     messageHeader = frame.Header;
                 }
@@ -67,7 +67,7 @@ namespace HCDU.API.Server
                 messageLength += frame.Header.PayloadLength;
                 if (messageLength > int.MaxValue)
                 {
-                    throw new HcduException("Long messages are not supported.");
+                    throw new HcduServerException("Long messages are not supported.");
                 }
 
                 messageContent.Write(frame.Content, 0, frame.Content.Length);
@@ -129,11 +129,11 @@ namespace HCDU.API.Server
             WebSocketFrameHeader frameHeader = ReadFrameHeader();
             if (frameHeader.PayloadLength > int.MaxValue)
             {
-                throw new HcduException("Long messages are not supported.");
+                throw new HcduServerException("Long messages are not supported.");
             }
             if (frameHeader.Mask == null)
             {
-                throw new HcduException("Client messages should be masked.");
+                throw new HcduServerException("Client messages should be masked.");
             }
 
             byte[] content = HttpUtils.ReadBlock(stream, (int) frameHeader.PayloadLength);
@@ -196,7 +196,7 @@ namespace HCDU.API.Server
             }
             if (content.Length > 125)
             {
-                throw new HcduException("Long messages are not supported.");
+                throw new HcduServerException("Long messages are not supported.");
             }
             byte[] frameHeader = new byte[2];
             frameHeader[0] = (byte) (0x80 | opcode);

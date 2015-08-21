@@ -3,7 +3,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
-namespace HCDU.API.Server
+namespace HCDU.Web.Server
 {
     public static class HttpUtils
     {

@@ -1,4 +1,4 @@
-namespace HCDU.API.Server
+namespace HCDU.Web.Server
 {
     //todo: change to struct?
     public class WebSocketFrameHeader
