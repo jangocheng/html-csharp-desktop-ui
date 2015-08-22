@@ -30,7 +30,15 @@ namespace HCDU.Linux.Gtk
         public void CloseDialog(WindowHandle win)
         {
             Window dlg = (Window) win.NativeWindow;
-            dlg.Destroy();
+			InvokeSync (() => {
+				Gdk.Event ev = Gdk.EventHelper.New(Gdk.EventType.Delete);
+				if(!dlg.ProcessEvent (ev))
+				{
+					dlg.Destroy();
+				}
+				//todo: this is a fake value
+				return true;
+			});
         }
 
         public void NavigateTo(WindowHandle window, string url)
@@ -144,6 +152,10 @@ namespace HCDU.Linux.Gtk
 
 			//todo: remove windowHandle creation from here
 			WindowHandle handle = new WindowHandle (this, this.webBrowser);
+			this.Destroyed += (o, args) =>
+			{
+				prot.OnClose (handle);
+			};
 
 			VBox vbox = new VBox(false, 0);
             this.Add(vbox);
