@@ -105,7 +105,6 @@ namespace HCDU.Windows
                 MenuStrip menu = CreateMenu(handle, prototype.Menu);
 
                 const int menuHeight = 24;
-                menu.Name = "menu";
                 menu.Size = new Size(form.ClientSize.Width, menuHeight);
                 menu.Location = new Point(0, 0);
                 menu.TabIndex = 0;
@@ -115,7 +114,6 @@ namespace HCDU.Windows
 
             form.Controls.Add(webBrowser);
 
-            webBrowser.Name = "webBrowser";
             webBrowser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             webBrowser.Location = new Point(0, occupiedHeight);
             webBrowser.Size = new Size(form.ClientSize.Width, form.ClientSize.Height - occupiedHeight);
@@ -139,36 +137,34 @@ namespace HCDU.Windows
             return handle;
         }
 
-        private MenuStrip CreateMenu(WindowHandle window, List<MenuPrototype> menuItems)
+        private MenuStrip CreateMenu(WindowHandle handle, List<MenuPrototype> menuItemsProt)
         {
             MenuStrip menu = new MenuStrip();
 
-            foreach (MenuPrototype menuItem in menuItems)
+            foreach (MenuPrototype menuItemProt in menuItemsProt)
             {
-                ToolStripMenuItem menuI = new ToolStripMenuItem();
-                menu.Items.Add(menuI);
-
-                //todo: is null allowed here?
-                menuI.Name = null;
-                menuI.Size = new Size(0, 20);
-                menuI.Text = menuItem.Text;
-
-                ToolStripItem[] children = menuItem.Items.Select(si => CreateDropDownItems(window, si)).ToArray();
-                menuI.DropDownItems.AddRange(children);
+                menu.Items.Add(CreateMenuItem(handle, menuItemProt));
             }
 
             return menu;
         }
 
-        private ToolStripItem CreateDropDownItems(WindowHandle window, MenuPrototype menuItemProt)
+        private ToolStripMenuItem CreateMenuItem(WindowHandle handle, MenuPrototype menuItemProt)
         {
-            ToolStripItem menuItem = new ToolStripMenuItem();
+            ToolStripMenuItem menuItem = new ToolStripMenuItem(menuItemProt.Text);
 
-            //todo: is null allowed here?
-            menuItem.Name = null;
-            menuItem.Size = new Size(0, 22);
-            menuItem.Text = menuItemProt.Text;
-            menuItem.Click += (sender, args) => menuItemProt.OnAction(window);
+            if (menuItemProt.OnAction != null)
+            {
+                menuItem.Click += (sender, args) => menuItemProt.OnAction(handle);
+            }
+
+            if (menuItemProt.Items != null && menuItemProt.Items.Any())
+            {
+                foreach (MenuPrototype menuSubItemProt in menuItemProt.Items)
+                {
+                    menuItem.DropDownItems.Add(CreateMenuItem(handle, menuSubItemProt));
+                }
+            }
 
             return menuItem;
         }
