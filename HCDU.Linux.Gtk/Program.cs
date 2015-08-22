@@ -14,11 +14,14 @@ namespace HCDU.Linux.Gtk
             container.Platform = new GtkPlatformAdapter();
             container.ApplicationPackage = new HcduContent();
 
-            //todo: use generic window creation approach
-            //Window mainWindow = container.CreateMainWindow();
+			container.Start ();
 
-            MainWindow mainWindow = new MainWindow();
-            container.Start(mainWindow, mainWindow.WebBrowser);
+			Window mainWindow = (Window) container.CreateMainWindow();
+			mainWindow.DeleteEvent += (o, a) => 
+			{
+				Application.Quit();
+				a.RetVal = true;
+			};
 
             mainWindow.Show();
 			Application.Run ();

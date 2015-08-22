@@ -3,6 +3,8 @@ using Gtk;
 using System;
 using System.Threading;
 using WebKit;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HCDU.Linux.Gtk
 {
@@ -15,7 +17,9 @@ namespace HCDU.Linux.Gtk
 
         public WindowHandle CreateWindow(WindowPrototype prototype)
         {
-            throw new NotImplementedException();
+			BrowserWindow window = new BrowserWindow (prototype);
+			WindowHandle handle = new WindowHandle (window, window.WebBrowser);
+			return handle;
         }
 
         public WindowHandle ShowDialog(WindowHandle parent, WindowPrototype prototype)
@@ -73,15 +77,15 @@ namespace HCDU.Linux.Gtk
 
         private WindowHandle ShowDialogHandler(Window parent, WindowPrototype prototype)
         {
-            BrowserWindow win = new BrowserWindow(prototype.Url);
+			//todo: use CreateWindow instead
+			BrowserWindow win = new BrowserWindow(prototype);
 
             win.TransientFor = parent;
             win.Modal = true;
             win.SkipTaskbarHint = true;
             win.TypeHint = Gdk.WindowTypeHint.Dialog;
-            //todo: bug, window cannot be resized to smaller size (seems related to https://bugs.webkit.org/show_bug.cgi?id=17154)
-            win.Resize(1024, 640);
-            win.ShowAll();
+
+			win.Show();
 
             return new WindowHandle(win, win.WebBrowser);
         }
@@ -121,25 +125,77 @@ namespace HCDU.Linux.Gtk
             get { return webBrowser; }
         }
 
-        public BrowserWindow(string url) : base(WindowType.Toplevel)
+		public BrowserWindow(WindowPrototype prototype) : base(WindowType.Toplevel)
         {
-            InitBrowser(url);
+			Construct(prototype);
         }
 
-        private void InitBrowser(string url)
+		private void Construct(WindowPrototype prot)
         {
-            webBrowser = new WebView();
-            webBrowser.Name = "webBrowser";
+			webBrowser = new WebView();
 
-            VBox vbox = new VBox();
-            vbox.Name = "vbox";
+			//todo: remove windowHandle creation from here
+			WindowHandle handle = new WindowHandle (this, this.webBrowser);
+
+			VBox vbox = new VBox(false, 0);
             this.Add(vbox);
 
-            vbox.Add(webBrowser);
-            global::Gtk.Box.BoxChild webBrowserBox = ((global::Gtk.Box.BoxChild) (vbox[webBrowser]));
-            webBrowserBox.Position = 0;
+			if (prot.Menu != null && prot.Menu.Any ())
+			{
+				MenuBar menuBar = CreateMenu (handle, prot.Menu);
 
-            webBrowser.LoadUri(url);
-        }
+				vbox.PackStart(menuBar, false, false, 0);
+			}
+
+			vbox.PackEnd(webBrowser, true, true, 0);
+
+			webBrowser.TitleChanged += (o, args) => 
+			{
+				string title = webBrowser.Title;
+				Application.Invoke(delegate { this.Title = title; });
+			};
+
+			webBrowser.LoadUri(prot.Url);
+
+			//todo: bug, window cannot be resized to smaller size (seems related to https://bugs.webkit.org/show_bug.cgi?id=17154)
+			Resize (prot.Width, prot.Height);
+
+			vbox.ShowAll ();
+       }
+
+		private MenuBar CreateMenu (WindowHandle handle, List<MenuPrototype> menuItemsProt)
+		{
+			MenuBar menuBar = new MenuBar ();
+
+			foreach (MenuPrototype menuItemProt in menuItemsProt)
+			{
+				menuBar.Append (CreateMenuItem(handle, menuItemProt));
+			}
+
+			return menuBar;
+		}
+
+		private MenuItem CreateMenuItem (WindowHandle handle, MenuPrototype menuItemProt)
+		{
+			MenuItem menuItem = new MenuItem(menuItemProt.Text);
+
+			if (menuItemProt.OnAction != null)
+			{
+				menuItem.Activated += (sender, e) => { menuItemProt.OnAction(handle); };
+			}	
+
+			if (menuItemProt.Items != null && menuItemProt.Items.Any ())
+			{
+				Menu subMenu = new Menu();
+				menuItem.Submenu = subMenu;
+
+				foreach (MenuPrototype menuSubItemProt in menuItemProt.Items)
+				{
+					subMenu.Append(CreateMenuItem(handle, menuSubItemProt));
+				}
+			}
+
+			return menuItem;
+		}
     }
 }

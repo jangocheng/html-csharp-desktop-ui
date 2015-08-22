@@ -18,8 +18,8 @@ namespace HCDU.API
         public WindowPrototype()
         {
             Menu = new List<MenuPrototype>();
-            Width = 1280;
-            Height = 800;
+            Width = 1024;
+            Height = 640;
         }
 
         public virtual object Clone()
