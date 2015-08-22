@@ -28,9 +28,9 @@ namespace HCDU.API
     //todo: rename?
     public class MenuPrototype : ICloneable
     {
-        public string Name { get; set; }
+        public string Text { get; set; }
         //todo: add method to check disabled state
-        public Action OnAction { get; set; }
+        public Action<WindowHandle> OnAction { get; set; }
 
         public List<MenuPrototype> Items { get; private set; }
 

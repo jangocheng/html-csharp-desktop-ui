@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using CefSharp.WinForms;
 using HCDU.API;
@@ -10,7 +12,7 @@ namespace HCDU.Windows
     {
         public string OpenFolderBrowserDialog(WindowHandle parent, bool allowCreateFolder)
         {
-            Form parentForm = (Form)parent.NativeWindow;
+            Form parentForm = (Form) parent.NativeWindow;
 
             if (parentForm.InvokeRequired)
             {
@@ -66,27 +68,106 @@ namespace HCDU.Windows
             form.Close();
         }
 
+        public void NavigateTo(WindowHandle window, string url)
+        {
+            ChromiumWebBrowser browser = (ChromiumWebBrowser) window.NativeBrowser;
+            browser.Load(url);
+        }
+
+        public void ReloadPage(WindowHandle window)
+        {
+            ChromiumWebBrowser browser = (ChromiumWebBrowser) window.NativeBrowser;
+            browser.Reload(true);
+        }
+
+        public void ShowDevTools(WindowHandle window)
+        {
+            ChromiumWebBrowser browser = (ChromiumWebBrowser) window.NativeBrowser;
+            browser.ShowDevTools();
+        }
+
         private WindowHandle ConstructDialog(WindowPrototype prototype)
         {
             Form form = new Form();
+            ChromiumWebBrowser webBrowser = new ChromiumWebBrowser("about:blank");
+            //todo: usage of WindowHandle is a little bit cumbersome
+            WindowHandle handle = new WindowHandle(form, webBrowser);
 
             //todo: is SuspendLayout/ResumeLayout required?
             form.SuspendLayout();
 
-            ChromiumWebBrowser webBrowser = new ChromiumWebBrowser(prototype.Url);
+            int occupiedHeight = 0;
+            if (prototype.Menu != null && prototype.Menu.Any())
+            {
+                MenuStrip menu = CreateMenu(handle, prototype.Menu);
+
+                const int menuHeight = 24;
+                menu.Name = "menu";
+                menu.Size = new Size(form.ClientSize.Width, menuHeight);
+                menu.Location = new Point(0, 0);
+                menu.TabIndex = 0;
+                form.Controls.Add(menu);
+                occupiedHeight += menuHeight;
+            }
+
             form.Controls.Add(webBrowser);
 
             webBrowser.Name = "webBrowser";
             webBrowser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            webBrowser.Location = new Point(0, 0);
-            webBrowser.Size = form.ClientSize;
+            webBrowser.Location = new Point(0, occupiedHeight);
+            webBrowser.Size = new Size(form.ClientSize.Width, form.ClientSize.Height - occupiedHeight);
             webBrowser.TabIndex = 1;
 
             form.Controls.Add(webBrowser);
+
             //todo: is SuspendLayout/ResumeLayout required?
             form.ResumeLayout();
 
-            return new WindowHandle(form, webBrowser);
+            webBrowser.TitleChanged += (sender, args) =>
+                                       {
+                                           if (form.InvokeRequired)
+                                           {
+                                               form.Invoke(new Action<string>(title => { form.Text = title; }), webBrowser.Title);
+                                           }
+                                       };
+
+            webBrowser.Load(prototype.Url);
+
+            return handle;
+        }
+
+        private MenuStrip CreateMenu(WindowHandle window, List<MenuPrototype> menuItems)
+        {
+            MenuStrip menu = new MenuStrip();
+
+            foreach (MenuPrototype menuItem in menuItems)
+            {
+                ToolStripMenuItem menuI = new ToolStripMenuItem();
+                menu.Items.Add(menuI);
+
+                //todo: is null allowed here?
+                menuI.Name = null;
+                menuI.Size = new Size(0, 20);
+                menuI.Text = menuItem.Text;
+
+                ToolStripItem[] children = menuItem.Items.Select(si => CreateDropDownItems(window, si)).ToArray();
+                menuI.DropDownItems.AddRange(children);
+            }
+
+            return menu;
+        }
+
+        private ToolStripItem CreateDropDownItems(WindowHandle window, MenuPrototype menuItemProt)
+        {
+            ToolStripItem menuItem = new ToolStripMenuItem();
+
+            //todo: is null allowed here?
+            menuItem.Name = null;
+            menuItem.Size = new Size(0, 22);
+            menuItem.Text = menuItemProt.Text;
+            menuItem.Click += (sender, args) => menuItemProt.OnAction(window);
+
+            return menuItem;
         }
     }
 }

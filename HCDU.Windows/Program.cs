@@ -20,12 +20,10 @@ namespace HCDU.Windows
             container.Platform = new WinFormsPlatformAdapter();
             container.ApplicationPackage = new HcduContent();
             
-            MainWindow mainWindow = new MainWindow();
-            container.Start(mainWindow, mainWindow.WebBrowser);
+            container.Start();
 
             //todo: use ApplicationContext instead ?
-            //Application.Run((Form) container.CreateMainWindow());
-            Application.Run(mainWindow);
+            Application.Run((Form) container.CreateMainWindow());
         }
     }
 }

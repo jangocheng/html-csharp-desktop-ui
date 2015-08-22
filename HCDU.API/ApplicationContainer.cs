@@ -86,6 +86,37 @@ namespace HCDU.API
             return Platform.OpenFolderBrowserDialog(mainWindow, allowCreateFolder);
         }
 
+        public void NavigateTo(WindowHandle window, string url)
+        {
+            if (window.NativeBrowser == null)
+            {
+                throw new HcduException("This window does not have a web browser.");
+            }
+            url = MakeAbsoluteUrl(url);
+            //todo: use invoke?
+            Platform.NavigateTo(window, url);
+        }
+
+        public void ReloadPage(WindowHandle window)
+        {
+            if (window.NativeBrowser == null)
+            {
+                throw new HcduException("This window does not have a web browser.");
+            }
+            //todo: use invoke?
+            Platform.ReloadPage(window);
+        }
+
+        public void ShowDevTools(WindowHandle window)
+        {
+            if (window.NativeBrowser == null)
+            {
+                throw new HcduException("This window does not have a web browser.");
+            }
+            //todo: use invoke?
+            Platform.ShowDevTools(window);
+        }
+
         private void OnWindowClose(WindowHandle win)
         {
             //todo: use some other type for window collection ?
@@ -94,8 +125,8 @@ namespace HCDU.API
 
         private string MakeAbsoluteUrl(string url)
         {
-            //todo: use some utils to construct url
-            return "http://localhost:" + webServer.Port + "/" + url;
+            Uri baseUri = new Uri("http://localhost:" + webServer.Port);
+            return new Uri(baseUri, url).AbsoluteUri;
         }
     }
 }

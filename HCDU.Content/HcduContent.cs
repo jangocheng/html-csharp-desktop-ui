@@ -15,8 +15,14 @@ namespace HCDU.Content
             MainWindowPrototype = new WindowPrototype();
             MainWindowPrototype.Url = "index.html";
 
-            MenuPrototype toolsMenu = new MenuPrototype{Name = "Tools"};
+            MenuPrototype toolsMenu = new MenuPrototype{Text = "Tools"};
             MainWindowPrototype.Menu.Add(toolsMenu);
+
+            toolsMenu.Items.Add(new MenuPrototype { Text = "Home Page", OnAction = wh => { Container.NavigateTo(wh, MainWindowPrototype.Url); } });
+            toolsMenu.Items.Add(new MenuPrototype { Text = "Angular Material Website", OnAction = wh => { Container.NavigateTo(wh, "https://material.angularjs.org"); } });
+            toolsMenu.Items.Add(new MenuPrototype { Text = "Developer tools", OnAction = wh => { Container.ShowDevTools(wh); } });
+            toolsMenu.Items.Add(new MenuPrototype { Text = "Reload", OnAction = wh => { Container.ReloadPage(wh); } });
+            toolsMenu.Items.Add(new MenuPrototype { Text = "Resources List", OnAction = wh => { Container.NavigateTo(wh, DebugPages.ResourcesListUrl); } });
 
             Content.AddContent(typeof(HcduContent).Assembly, "HCDU.Content.Web");
             Content.AddMethod("rest/cars/boxter", () => new Car { Model = "Porsche Boxster", Year = 1996 });

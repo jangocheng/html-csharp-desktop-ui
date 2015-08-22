@@ -9,9 +9,11 @@ namespace HCDU.API
 {
     public static class DebugPages
     {
+        public const string ResourcesListUrl = "debug/resources.html";
+
         public static void AppendTo(ContentPackage contentPackage)
         {
-            contentPackage.AddContentProvider("debug/resources.html", new ContentPackageResourceListContentProvider(contentPackage));
+            contentPackage.AddContentProvider(ResourcesListUrl, new ContentPackageResourceListContentProvider(contentPackage));
         }
     }
 

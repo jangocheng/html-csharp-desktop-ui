@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using HCDU.API;
+﻿using HCDU.API;
 using Gtk;
 using System;
 using System.Threading;
@@ -26,8 +25,30 @@ namespace HCDU.Linux.Gtk
 
         public void CloseDialog(WindowHandle win)
         {
-            //todo: implement
-            throw new NotImplementedException();
+            Window dlg = (Window) win.NativeWindow;
+            dlg.Destroy();
+        }
+
+        public void NavigateTo(WindowHandle window, string url)
+        {
+            WebView browser = (WebView) window.NativeBrowser;
+            browser.LoadUri(url);
+        }
+
+        public void ReloadPage(WindowHandle window)
+        {
+            WebView browser = (WebView) window.NativeBrowser;
+            browser.Reload();
+        }
+
+        public void ShowDevTools(WindowHandle window)
+        {
+            Window parent = (Window) window.NativeWindow;
+            using (MessageDialog dlg = new MessageDialog(parent, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Developoer tools are not supported on this platform."))
+            {
+                dlg.Run();
+                dlg.Destroy();
+            }
         }
 
         //todo: review this approach, it does not look safe
@@ -69,24 +90,25 @@ namespace HCDU.Linux.Gtk
         {
             FileChooserAction action = allowCreateFolder ? FileChooserAction.CreateFolder : FileChooserAction.SelectFolder;
 
-            FileChooserDialog dlg = new FileChooserDialog(
+            using (FileChooserDialog dlg = new FileChooserDialog(
                 "Select a folder",
                 parent,
                 action,
                 "Cancel", ResponseType.Cancel,
                 "Open", ResponseType.Accept
-                );
-
-            string result = null;
-
-            if (dlg.Run() == (int) ResponseType.Accept)
+                ))
             {
-                result = dlg.Filename;
+                string result = null;
+
+                if (dlg.Run() == (int) ResponseType.Accept)
+                {
+                    result = dlg.Filename;
+                }
+
+                dlg.Destroy();
+
+                return result;
             }
-
-            dlg.Destroy();
-
-            return result;
         }
     }
 
