@@ -32,4 +32,7 @@
 *.min.css -text !eol
 *.min.js -text !eol
 
+# External Packages
 packages/**/*.* -text !eol
+Lib/**/*.* -text !eol
+

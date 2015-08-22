@@ -132,7 +132,15 @@ namespace HCDU.Linux.Gtk
 
 		private void Construct(WindowPrototype prot)
         {
-			webBrowser = new WebView();
+			string errorMessage = null;
+			try
+			{
+				webBrowser = new WebView();
+			}
+			catch(Exception e)
+			{
+				errorMessage = "Failed to create a WebKit.WebView widget.\nMake sure that libwebkitgtk-1.0 is installed.";
+			}
 
 			//todo: remove windowHandle creation from here
 			WindowHandle handle = new WindowHandle (this, this.webBrowser);
@@ -147,15 +155,23 @@ namespace HCDU.Linux.Gtk
 				vbox.PackStart(menuBar, false, false, 0);
 			}
 
-			vbox.PackEnd(webBrowser, true, true, 0);
-
-			webBrowser.TitleChanged += (o, args) => 
+			if (webBrowser == null)
 			{
-				string title = webBrowser.Title;
-				Application.Invoke(delegate { this.Title = title; });
-			};
+				Label errorLabel = new Label (errorMessage);
+				vbox.PackEnd(errorLabel, true, true, 0);
+			}
+			else
+			{
+				vbox.PackEnd(webBrowser, true, true, 0);
 
-			webBrowser.LoadUri(prot.Url);
+				webBrowser.TitleChanged += (o, args) => 
+				{
+					string title = webBrowser.Title;
+					Application.Invoke(delegate { this.Title = title; });
+				};
+
+				webBrowser.LoadUri(prot.Url);
+			}
 
 			//todo: bug, window cannot be resized to smaller size (seems related to https://bugs.webkit.org/show_bug.cgi?id=17154)
 			Resize (prot.Width, prot.Height);
