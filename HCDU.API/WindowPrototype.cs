@@ -10,11 +10,16 @@ namespace HCDU.API
         public string Url { get; set; }
         public List<MenuPrototype> Menu { get; private set; }
 
+        public int Width { get; set; }
+        public int Height { get; set; }
+
         public Action<WindowHandle> OnClose { get; set; }
 
         public WindowPrototype()
         {
             Menu = new List<MenuPrototype>();
+            Width = 1280;
+            Height = 800;
         }
 
         public virtual object Clone()

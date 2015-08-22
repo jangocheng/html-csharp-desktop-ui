@@ -89,7 +89,10 @@ namespace HCDU.Windows
         private WindowHandle ConstructDialog(WindowPrototype prototype)
         {
             Form form = new Form();
+            form.Size = new Size(prototype.Width, prototype.Height);
+
             ChromiumWebBrowser webBrowser = new ChromiumWebBrowser("about:blank");
+
             //todo: usage of WindowHandle is a little bit cumbersome
             WindowHandle handle = new WindowHandle(form, webBrowser);
 
