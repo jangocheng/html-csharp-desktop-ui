@@ -80,4 +80,10 @@
       <Name>HCDU.Content</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Lib\webkit-sharp\webkit-sharp.dll.config">
+      <Link>webkit-sharp.dll.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

@@ -137,7 +137,7 @@ namespace HCDU.Linux.Gtk
 			{
 				webBrowser = new WebView();
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
 				errorMessage = "Failed to create a WebKit.WebView widget.\nMake sure that libwebkitgtk-1.0 is installed.";
 			}
