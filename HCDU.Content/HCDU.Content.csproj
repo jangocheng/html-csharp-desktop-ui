@@ -78,9 +78,6 @@
     <EmbeddedResource Include="Web\fonts\roboto\roboto.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Web\images\menu.svg" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Web\partials\examples\rest\rest.html" />
     <EmbeddedResource Include="Web\partials\examples\rest\rest.js" />
   </ItemGroup>

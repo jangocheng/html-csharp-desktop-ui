@@ -1,11 +1,7 @@
 var app = angular.module('HcduApp', ['ngMaterial']);
 
 app.controller('AppCtrl', [
-    '$scope', '$mdSidenav', function($scope, $mdSidenav) {
-
-        $scope.toggleSidenav = function() {
-            $mdSidenav('left').toggle();
-        };
+    '$scope', function($scope) {
 
         $scope.sections = [
             { name: 'about', title: 'About' },
@@ -19,7 +15,6 @@ app.controller('AppCtrl', [
 
         $scope.showSection = function(section) {
             $scope.selectedSection = section;
-            $mdSidenav('left').close();
         };
 
         $scope.getExampleUrl = function() {
